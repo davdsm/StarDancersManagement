@@ -1,0 +1,38 @@
+{
+  "kind": "collectionType",
+  "collectionName": "alunos",
+  "info": {
+    "singularName": "aluno",
+    "pluralName": "alunos",
+    "displayName": "Alunos"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Nome": {
+      "type": "string",
+      "required": true
+    },
+    "Responsavel": {
+      "type": "string",
+      "required": false
+    },
+    "Contacto": {
+      "type": "integer"
+    },
+    "Pago": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "Valor": {
+      "type": "float",
+      "required": true
+    },
+    "Turma": {
+      "type": "string"
+    }
+  }
+}
