@@ -16,3 +16,17 @@ services:
        - /usr/src/app/StarDancers/node_modules
     
     restart: always
+
+  starapi:
+    build:
+      context: ./StarDancersAPI
+      dockerfile: Dockerfile
+    ports:
+      - "1337:1337"
+    container_name: StarApi
+    command: npm run develop
+    volumes:
+       - ./StarDancersAPI:/usr/src/app/StarDancersAPI
+       - /usr/src/app/StarDancersAPI/node_modules
+    
+    restart: always
