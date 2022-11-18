@@ -1,4 +1,5 @@
 import axios from "axios";
+
 export const doLogin: DoLogin = async (username: String, password: String) => {
   return axios
     .post(`${import.meta.env.VITE_ADDRESS}/api/auth/local`, {
@@ -27,4 +28,19 @@ export const getCookie: GetCookie = async (key: String) => {
 
 export const removeCookie: RemoveCookie = async (key: String) => {
   $cookies.remove(key);
+};
+
+export const getStudents: GetStudents = async () => {
+  return axios
+    .get(`${import.meta.env.VITE_ADDRESS}/api/students`, {
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_TOKEN}`,
+      },
+    })
+    .then((response) => {
+      return response.data.data;
+    })
+    .catch((response) => {
+      return response.response ? response.response.status : 500;
+    });
 };
