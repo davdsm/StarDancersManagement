@@ -114,6 +114,9 @@ body {
 .delay {
   animation-delay: 0.1s;
 }
+table tr:nth-child(even) {
+  background-color: rgb(249 250 251);
+}
 
 @keyframes entry {
   0% {
