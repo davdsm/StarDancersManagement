@@ -41,7 +41,7 @@ export default {
       @click="() => close()"
     ></div>
     <div
-      class="mt-5 relative w-full max-w-2xl h-full md:h-auto overflow-y-auto overflow-x-hidden z-50"
+      class="mt-5  relative w-full max-w-2xl h-full md:h-auto overflow-y-auto overflow-x-hidden z-50"
     >
       <!-- Modal content -->
       <form
