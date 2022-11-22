@@ -34,14 +34,14 @@ export default {
 
 <template>
   <div
-    class="w-full h-full flex justify-center items-center fixed top-0 right-0 left-0"
+    class="w-full h-full flex justify-center items-top fixed top-0 right-0 left-0"
   >
     <div
       class="fixed w-full h-full z-40 bg-slate-400 opacity-30"
       @click="() => close()"
     ></div>
     <div
-      class="relative w-full max-w-2xl h-full md:h-auto overflow-y-auto overflow-x-hidden z-50"
+      class="mt-5 relative w-full max-w-2xl h-full md:h-auto overflow-y-auto overflow-x-hidden z-50"
     >
       <!-- Modal content -->
       <form

@@ -105,7 +105,7 @@ export default {
 </script>
 
 <template class="bg-slate-100">
-  <main class="container mx-auto">
+  <main class="container mx-auto pl-20 pr-20">
     <header class="entry pt-20 pb-20 w-full md:grid md:grid-cols-2 gap-2">
       <div class="max-sm:pl-10 max-sm:w-full">
         <h1 class="text-2xl">Olá {{ username }} 👋</h1>
