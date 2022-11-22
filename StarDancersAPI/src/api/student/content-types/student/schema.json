@@ -4,7 +4,8 @@
   "info": {
     "singularName": "student",
     "pluralName": "students",
-    "displayName": "Student"
+    "displayName": "Student",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -51,7 +52,7 @@
       "required": true
     },
     "Week": {
-      "type": "string",
+      "type": "json",
       "required": true
     }
   }

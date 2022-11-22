@@ -40,7 +40,7 @@ export const getStudents: GetStudents = async () => {
   return axios
     .get(`${import.meta.env.VITE_ADDRESS}/api/students`, headers)
     .then((response) => {
-      return response.data.data;
+      return response.data.data.reverse();
     })
     .catch((response) => {
       return response.response ? response.response.status : 500;
@@ -52,13 +52,43 @@ export const setStudent: SetStudent = async (
   value: any,
   id: Integer
 ) => {
-  let payload = false;
+  let payload = value;
   if (key === "Paid") {
     payload = { Paid: value };
   }
   return axios
     .put(
       `${import.meta.env.VITE_ADDRESS}/api/students/${id}`,
+      {
+        data: payload,
+      },
+      headers
+    )
+    .then(() => {
+      return getStudents();
+    })
+    .catch((response) => {
+      return response.response ? response.response.status : 500;
+    });
+};
+
+export const removeStudent: RemoveStudent = async (id: Integer) => {
+  return axios
+    .delete(`${import.meta.env.VITE_ADDRESS}/api/students/${id}`, headers)
+    .then(() => {
+      return getStudents();
+    })
+    .catch((response) => {
+      return response.response ? response.response.status : 500;
+    });
+};
+
+export const createStudent: CreateStudent = async (payload: Object) => {
+  const data = payload;
+  data.ParentContact = String(data.ParentContact);
+  return axios
+    .post(
+      `${import.meta.env.VITE_ADDRESS}/api/students/`,
       {
         data: payload,
       },
