@@ -11,7 +11,7 @@ const address = import.meta.env.VITE_ADDRESS;
     <div
       class="col-span-2 bg-cover bg-center bg-white max-lg:hidden"
       :style="{
-        backgroundImage: `url(${address}/uploads/IMG_20220724_WA_0160_9551f8488a.jpg?updated_at=2022-11-17T14:01:12.848Z)`,
+        backgroundImage: `url(${address}/uploads/IMG_20220724_WA_0160_2217e23e15.jpg?updated_at=2022-11-25T02:55:30.992Z)`,
       }"
     ></div>
   </div>

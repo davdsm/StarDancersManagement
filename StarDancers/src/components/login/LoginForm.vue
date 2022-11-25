@@ -42,7 +42,7 @@ export default {
     <img
       v-bind:src="
         address +
-        '/uploads/logo_6864f61fb7.png?updated_at=2022-11-17T20:10:28.305Z'
+        '/uploads/logo_ee5853dd17.png?updated_at=2022-11-25T01:35:44.722Z'
       "
       class="w-48"
     />
