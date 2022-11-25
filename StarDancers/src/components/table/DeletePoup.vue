@@ -55,7 +55,7 @@ export default {
             <h3
               class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400"
             >
-              Tem a certeza que pretende eliminiar {{ this.name }}?
+              Tem a certeza que pretende eliminiar {{ name }}?
             </h3>
             <button
               data-modal-toggle="popup-modal"

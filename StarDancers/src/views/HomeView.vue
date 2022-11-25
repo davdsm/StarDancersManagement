@@ -14,7 +14,7 @@ export default {
     return {
       username: "",
       students: [],
-      loading: false,
+      loading: <any>false,
       query: "",
       showModal: false,
       student: {},
@@ -211,7 +211,7 @@ export default {
         </div>
       </div>
       <TableList
-        v-if="this.students.length > 0"
+        v-if="students.length > 0"
         :students="filterStudents"
         :loading="loading"
         :show="(item: any) => ((student = item), (showModal = true))"

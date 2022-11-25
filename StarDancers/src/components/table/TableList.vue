@@ -58,18 +58,18 @@ export default {
           </td>
           <td class="py-4 px-6 flex justify-start">
             <span
-              v-if="this.loading !== item.id && item.attributes.Paid"
+              v-if="loading !== item.id && item.attributes.Paid"
               @click="pay(item.id, !item.attributes.Paid)"
               class="cursor-pointer bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900"
               >Pago</span
             >
             <span
-              v-if="this.loading !== item.id && !item.attributes.Paid"
+              v-if="loading !== item.id && !item.attributes.Paid"
               @click="pay(item.id, !item.attributes.Paid)"
               class="cursor-pointer bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-red-200 dark:text-red-900"
               >Não Pago</span
             >
-            <span v-if="this.loading === item.id">
+            <span v-if="loading === item.id">
               <svg
                 class="inline mr-2 w-4 h-4 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
                 viewBox="0 0 100 101"
