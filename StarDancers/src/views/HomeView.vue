@@ -131,7 +131,7 @@ export default {
       <div class="max-sm:pl-10 max-sm:w-full">
         <h1 class="text-2xl">Olá {{ username }} 👋</h1>
       </div>
-      <div class="flex justify-center flex-col w-auto max-sm:hidden title">
+      <div class="flex justify-center flex-col w-auto title max-sm:pr-10">
         <button
           id="dropdownDefault"
           data-dropdown-toggle="dropdown"
