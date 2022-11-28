@@ -36,7 +36,7 @@ export default {
 
 <template>
   <div
-    class="w-full h-full flex justify-center items-top fixed top-0 right-0 left-0"
+    class="z-40 w-full h-full flex justify-center items-top fixed top-0 right-0 left-0"
   >
     <div
       class="fixed w-full h-full z-40 bg-slate-400 opacity-30"
