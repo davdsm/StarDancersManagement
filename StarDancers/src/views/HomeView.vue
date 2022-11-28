@@ -131,11 +131,14 @@ export default {
       <div class="max-sm:pl-10 max-sm:w-full">
         <h1 class="text-2xl">Olá {{ username }} 👋</h1>
       </div>
-      <div class="flex justify-center flex-col w-auto title max-sm:pr-10">
+      <div
+        class="flex justify-center flex-col w-auto title max-sm:pr-10"
+        :style="{ alignItems: 'end' }"
+      >
         <button
           id="dropdownDefault"
           data-dropdown-toggle="dropdown"
-          class="<-10 flex items-center justify-center w-24 yellow p-3 rounded-lg cursor-pointer"
+          class="flex items-center justify-center w-24 yellow p-3 rounded-lg cursor-pointer"
           type="button"
           @click="() => (menu = !menu)"
         >
