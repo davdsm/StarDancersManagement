@@ -6,6 +6,7 @@ export default {
   data() {
     return {
       local_student: JSON.parse(JSON.stringify(this.student)),
+      terms: false,
       deleteConfirmation: false,
       week: [
         "Segunda",
@@ -269,6 +270,29 @@ export default {
                   >Pago</label
                 >
               </div>
+            </div>
+          </div>
+          <div v-if="local_student.id === 0">
+            <div class="flex items-center pl-4 rounded border border-gray-200">
+              <input
+                id="bordered-checkbox-3"
+                type="checkbox"
+                v-model="terms"
+                name="bordered-checkbox"
+                required
+                class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500"
+              />
+              <label
+                for="bordered-checkbox-3"
+                class="py-4 ml-2 w-full block text-sm font-medium text-gray-900"
+                >Aceito os
+                <a
+                  class="text-sm font-medium text-gray-900 underlined underline decoration-indigo-500"
+                  href=""
+                  target="_blank"
+                  >Termos e Condições</a
+                >.</label
+              >
             </div>
           </div>
         </div>

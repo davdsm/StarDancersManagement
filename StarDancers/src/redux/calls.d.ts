@@ -34,6 +34,7 @@ export const getCookie: GetCookie = async (key: String) => {
 
 export const removeCookie: RemoveCookie = async (key: String) => {
   $cookies.remove(key);
+  return true;
 };
 
 export const getStudents: GetStudents = async () => {
@@ -96,6 +97,23 @@ export const createStudent: CreateStudent = async (payload: Object) => {
     )
     .then(() => {
       return getStudents();
+    })
+    .catch((response) => {
+      return response.response ? response.response.status : 500;
+    });
+};
+
+export const updatePassword: UpdatePassword = async (password: String) => {
+  return axios
+    .put(
+      `${import.meta.env.VITE_ADDRESS}/api/users/2`,
+      {
+        password: password,
+      },
+      headers
+    )
+    .then(() => {
+      return true;
     })
     .catch((response) => {
       return response.response ? response.response.status : 500;

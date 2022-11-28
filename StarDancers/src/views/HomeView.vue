@@ -5,9 +5,13 @@ import {
   removeStudent,
   setStudent,
   createStudent,
+  updatePassword,
+  removeCookie,
 } from "../redux/calls.d";
 import Modal from "../components/table/ModalTable.vue";
 import TableList from "@/components/table/TableList.vue";
+import PasswordModal from "@/components/login/PasswordModal.vue";
+import DropdownMenu from "@/components/DropdownMenu.vue";
 
 export default {
   data() {
@@ -17,6 +21,8 @@ export default {
       loading: <any>false,
       query: "",
       showModal: false,
+      menu: false,
+      password: false,
       student: {},
     };
   },
@@ -69,10 +75,20 @@ export default {
       this.showModal = false;
       this.loading = false;
     },
+    async putPassword(password: String) {
+      await updatePassword(password);
+      this.password = false;
+    },
+    async logout() {
+      await removeCookie("user");
+      this.$router.push("/login");
+    },
   },
   components: {
     Modal,
     TableList,
+    PasswordModal,
+    DropdownMenu,
   },
   computed: {
     filterStudents() {
@@ -105,13 +121,24 @@ export default {
 </script>
 
 <template class="bg-slate-100">
-  <main class="container mx-auto pl-20 pr-20">
-    <header class="entry pt-20 pb-20 w-full md:grid md:grid-cols-2 gap-2">
+  <PasswordModal
+    v-if="password"
+    :close="() => (password = false)"
+    :putPassword="putPassword"
+  />
+  <main class="container mx-auto sm:pl-20 sm:pr-20">
+    <header class="flex justify-between entry pt-20 pb-20 w-full z-20">
       <div class="max-sm:pl-10 max-sm:w-full">
         <h1 class="text-2xl">Olá {{ username }} 👋</h1>
       </div>
-      <div class="flex justify-end w-auto max-sm:hidden title">
-        <div class="yellow p-3 rounded-lg cursor-pointer">
+      <div class="flex justify-center flex-col w-auto max-sm:hidden title">
+        <button
+          id="dropdownDefault"
+          data-dropdown-toggle="dropdown"
+          class="<-10 flex items-center justify-center w-24 yellow p-3 rounded-lg cursor-pointer"
+          type="button"
+          @click="() => (menu = !menu)"
+        >
           <svg
             class="w-6 h-6"
             fill="none"
@@ -132,7 +159,32 @@ export default {
               d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
             ></path>
           </svg>
-        </div>
+          <svg
+            class="ml-2 w-4 h-4"
+            aria-hidden="true"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            ></path>
+          </svg>
+        </button>
+        <DropdownMenu
+          v-if="menu"
+          :logout="logout"
+          :openPassword="
+            () => {
+              menu = false;
+              password = true;
+            }
+          "
+        />
       </div>
     </header>
     <div
