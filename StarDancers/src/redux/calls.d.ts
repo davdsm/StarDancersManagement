@@ -39,7 +39,7 @@ export const removeCookie: RemoveCookie = async (key: String) => {
 
 export const getStudents: GetStudents = async () => {
   return axios
-    .get(`${import.meta.env.VITE_ADDRESS}/api/students`, headers)
+    .get(`${import.meta.env.VITE_ADDRESS}/api/students?publicationState=live&pagination[page]=1&pagination[pageSize]=9999`, headers)
     .then((response) => {
       return response.data.data.reverse();
     })
