@@ -8,7 +8,7 @@ export default {
     <div
       id="popup-modal"
       tabindex="-1"
-      class="overflow-y-auto overflow-x-hidden fixed top-0 h-full flex justify-center items-center p-4 md:inset-0 h-modal md:h-full"
+      class="z-40 overflow-y-auto overflow-x-hidden fixed top-0 h-full flex justify-center items-center p-4 md:inset-0 h-modal md:h-full"
     >
       <div
         class="fixed w-full h-full z-40 bg-slate-400 opacity-30"
@@ -17,8 +17,9 @@ export default {
       <div class="relative w-full max-w-md md:h-auto z-50 x">
         <div class="relative bg-white rounded-lg shadow">
           <button
+            @click="() => no()"
             type="button"
-            class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+            class="pointer absolute z-40 top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
             data-modal-toggle="popup-modal"
           >
             <svg
