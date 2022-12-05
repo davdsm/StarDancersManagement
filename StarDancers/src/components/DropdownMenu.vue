@@ -1,6 +1,13 @@
 <script lang="ts">
 export default {
   props: ["openPassword", "logout"],
+  data() {
+    return {
+      link: `${
+        import.meta.env.VITE_ADDRESS
+      }/uploads/Politica_Privacidade_Final_ebaef2dfab.pdf?updated_at=2022-12-05T18:40:42.256Z`,
+    };
+  },
 };
 </script>
 <template>
@@ -13,11 +20,13 @@ export default {
       aria-labelledby="dropdownDefault"
     >
       <li>
-        <button
+        <a
+          :href="link"
+          target="_blank"
           class="text-left w-full block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600"
         >
           Política de Privacidade
-        </button>
+        </a>
       </li>
       <li>
         <button
