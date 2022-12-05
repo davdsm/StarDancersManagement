@@ -1,0 +1,12 @@
+{
+  "name": "SendText",
+  "version": "0.0.0",
+  "dependencies": {
+    "api": "^5.0.4",
+    "axios": "^1.2.1",
+    "dotenv": "^16.0.3",
+    "node-cron": "^3.0.2",
+    "telesignsdk": "^2.2.3"
+  },
+  "type": "module"
+}

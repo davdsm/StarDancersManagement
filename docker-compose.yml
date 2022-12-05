@@ -1,6 +1,19 @@
-  
-version: '3'
+version: "3"
 services:
+  starsms:
+    build:
+      context: ./SendText
+      dockerfile: Dockerfile
+    container_name: StarSMS
+    command: node sms.js
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./SendText:/usr/src/app/SendText
+      - /usr/src/app/SendText/node_modules
+
+    restart: always
+
   starapp:
     build:
       context: ./StarDancers
@@ -9,12 +22,12 @@ services:
       - "8080:8080"
     container_name: StarApp
     command: npm run dev -- --port 8080 --host
-    environment: 
+    environment:
       - CHOKIDAR_USEPOLLING=true
     volumes:
-       - ./StarDancers:/usr/src/app/StarDancers
-       - /usr/src/app/StarDancers/node_modules
-    
+      - ./StarDancers:/usr/src/app/StarDancers
+      - /usr/src/app/StarDancers/node_modules
+
     restart: always
 
   starapi:
@@ -26,7 +39,7 @@ services:
     container_name: StarApi
     command: npm run develop
     volumes:
-       - ./StarDancersAPI:/usr/src/app/StarDancersAPI
-       - /usr/src/app/StarDancersAPI/node_modules
-    
+      - ./StarDancersAPI:/usr/src/app/StarDancersAPI
+      - /usr/src/app/StarDancersAPI/node_modules
+
     restart: always
