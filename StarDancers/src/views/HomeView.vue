@@ -96,6 +96,7 @@ export default {
       [this.students, this.pagination] = await searchStudents(this.query);
     },
     async clearSearch() {
+      this.page = 1;
       this.query = "";
       [this.students, this.pagination] = await getStudents(this.page, false);
     },
