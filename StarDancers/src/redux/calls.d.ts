@@ -83,7 +83,8 @@ export const searchStudents: SearchStudents = async (word: String) => {
 export const setStudent: SetStudent = async (
   key: String,
   value: any,
-  id: Integer
+  id: Integer,
+  search: Boolean
 ) => {
   let payload = value;
   if (key === "Paid") {
@@ -98,7 +99,7 @@ export const setStudent: SetStudent = async (
       headers
     )
     .then(() => {
-      return getStudents(oficialPage, false);
+      return getStudents(oficialPage, search);
     })
     .catch((response) => {
       return response.response ? response.response.status : 500;
