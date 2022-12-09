@@ -7,11 +7,13 @@ import {
   createStudent,
   updatePassword,
   removeCookie,
+  searchStudents,
 } from "../redux/calls.d";
 import Modal from "../components/table/ModalTable.vue";
 import TableList from "@/components/table/TableList.vue";
 import PasswordModal from "@/components/login/PasswordModal.vue";
 import DropdownMenu from "@/components/DropdownMenu.vue";
+import PaginationTable from "@/components/PaginationTable.vue";
 
 export default {
   data() {
@@ -20,31 +22,30 @@ export default {
       students: [],
       loading: <any>false,
       query: "",
-      showModal: false,
-      menu: false,
-      password: false,
+      showModal: <Boolean>false,
+      menu: <Boolean>false,
+      password: <Boolean>false,
       student: {},
+      page: <Number>1,
+      pagination: <any>{},
     };
   },
   methods: {
     async pay(id: any, status: Boolean) {
       this.loading = id;
-      const students = await setStudent("Paid", status, id);
-      this.students = students;
+      [this.students, this.pagination] = await setStudent("Paid", status, id);
       this.loading = false;
     },
     async update(id: any, payload: Object) {
       this.showModal = false;
       const data = Object.assign({}, payload);
       this.loading = id;
-      const students = await setStudent("Profile", data, id);
-      this.students = students;
+      [this.students, this.pagination] = await setStudent("Profile", data, id);
       this.loading = false;
     },
     async delete(id: Number) {
       this.loading = id;
-      const students = await removeStudent(id);
-      this.students = students;
+      [this.students, this.pagination] = await removeStudent(id);
       this.showModal = false;
       this.loading = false;
     },
@@ -70,8 +71,7 @@ export default {
     },
     async create(payload: Object) {
       const data = Object.assign({}, payload);
-      const students = await createStudent(data);
-      this.students = students;
+      [this.students, this.pagination] = await createStudent(data);
       this.showModal = false;
       this.loading = false;
     },
@@ -83,29 +83,29 @@ export default {
       await removeCookie("user");
       this.$router.push("/login");
     },
+    async handlePagination(e: any, page: Number) {
+      e.preventDefault();
+      this.page = page;
+      [this.students, this.pagination] = await getStudents(
+        this.page,
+        this.query.length > 0
+      );
+    },
+    async search(e: any) {
+      e.preventDefault();
+      [this.students, this.pagination] = await searchStudents(this.query);
+    },
+    async clearSearch() {
+      this.query = "";
+      [this.students, this.pagination] = await getStudents(this.page, false);
+    },
   },
   components: {
     Modal,
     TableList,
     PasswordModal,
     DropdownMenu,
-  },
-  computed: {
-    filterStudents() {
-      return this.students.filter(
-        (item: any) =>
-          item.attributes.Name.toLowerCase().includes(
-            this.query.toLowerCase()
-          ) ||
-          item.attributes.ParentName.toLowerCase().includes(
-            this.query.toLowerCase()
-          ) ||
-          item.attributes.ParentContact.toLowerCase().includes(
-            this.query.toLowerCase()
-          ) ||
-          item.attributes.Class.toLowerCase().includes(this.query.toLowerCase())
-      );
-    },
+    PaginationTable,
   },
 
   async beforeMount() {
@@ -115,7 +115,7 @@ export default {
     } else {
       this.username = user;
     }
-    this.students = await getStudents();
+    [this.students, this.pagination] = await getStudents(this.page, false);
   },
 };
 </script>
@@ -200,7 +200,7 @@ export default {
               Alunos
             </h3>
             <p class="text-md pt-2 font-medium subtitle max-sm:text-center">
-              Um total de {{ filterStudents.length }} alunos. 😜
+              Um total de {{ pagination.total }} alunos. 😜
             </p>
           </header>
         </div>
@@ -232,7 +232,7 @@ export default {
             </button>
           </div>
           <div class="max-sm:w-full">
-            <form class="flex items-center" @submit="(e) => e.preventDefault()">
+            <form class="flex items-center" @submit="(e) => search(e)">
               <label for="simple-search" class="sr-only">Pesquisa</label>
               <div class="relative w-full">
                 <div
@@ -253,27 +253,53 @@ export default {
                   </svg>
                 </div>
                 <input
-                  type="text"
+                  type="search"
                   id="simple-search"
                   v-model="query"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full max-sm:pl-4 md:pl-10 p-2.5"
                   placeholder="Search"
-                  required
                 />
               </div>
+              <button type="submit" class="hidden">Submit</button>
+              <button
+                type="reset"
+                class="ml-3"
+                v-if="query"
+                @click="clearSearch"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-6 h-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </button>
             </form>
           </div>
         </div>
       </div>
       <TableList
         v-if="students.length > 0"
-        :students="filterStudents"
+        :students="students"
         :loading="loading"
         :show="(item: any) => ((student = item), (showModal = true))"
         :student="student"
         :pay="pay"
       />
     </div>
+    <PaginationTable
+      :page="page"
+      :pagination="pagination"
+      :handlePagination="handlePagination"
+    />
     <modal
       v-if="showModal"
       :close="() => (showModal = false)"

@@ -6,6 +6,9 @@ const headers = {
   },
 };
 
+let oficialPage = 1;
+let filters = "";
+
 export const doLogin: DoLogin = async (username: String, password: String) => {
   return axios
     .post(`${import.meta.env.VITE_ADDRESS}/api/auth/local`, {
@@ -37,15 +40,44 @@ export const removeCookie: RemoveCookie = async (key: String) => {
   return true;
 };
 
-export const getStudents: GetStudents = async () => {
+export const getStudents: GetStudents = async (page: Number, withFilters) => {
+  oficialPage = page;
+  if (!withFilters) {
+    filters = "";
+  }
+
   return axios
-    .get(`${import.meta.env.VITE_ADDRESS}/api/students?publicationState=live&pagination[page]=1&pagination[pageSize]=9999`, headers)
+    .get(
+      `${
+        import.meta.env.VITE_ADDRESS
+      }/api/students?publicationState=live&pagination[page]=${page}&sort=id:desc${filters}`,
+      headers
+    )
     .then((response) => {
-      return response.data.data.reverse();
+      return [response.data.data, response.data.meta.pagination];
     })
     .catch((response) => {
       return response.response ? response.response.status : 500;
     });
+};
+
+export const searchStudents: SearchStudents = async (word: String) => {
+  if (word) {
+    filters = `&filters[$or][0][Name][$containsi]=${word}&filters[$or][1][ParentName][$containsi]=${word}&filters[$or][2][ParentEmail][$containsi]=${word}&filters[$or][3][Class][$containsi]=${word}&filters[$or][4][ParentContact][$containsi]=${word}`;
+    return axios
+      .get(
+        `${import.meta.env.VITE_ADDRESS}/api/students?sort=id:desc${filters}`,
+        headers
+      )
+      .then((response) => {
+        return [response.data.data, response.data.meta.pagination];
+      })
+      .catch((response) => {
+        return response.response ? response.response.status : 500;
+      });
+  } else {
+    return getStudents(1, false);
+  }
 };
 
 export const setStudent: SetStudent = async (
@@ -66,7 +98,7 @@ export const setStudent: SetStudent = async (
       headers
     )
     .then(() => {
-      return getStudents();
+      return getStudents(oficialPage, false);
     })
     .catch((response) => {
       return response.response ? response.response.status : 500;
@@ -77,7 +109,7 @@ export const removeStudent: RemoveStudent = async (id: Integer) => {
   return axios
     .delete(`${import.meta.env.VITE_ADDRESS}/api/students/${id}`, headers)
     .then(() => {
-      return getStudents();
+      return getStudents(oficialPage, false);
     })
     .catch((response) => {
       return response.response ? response.response.status : 500;
@@ -96,7 +128,7 @@ export const createStudent: CreateStudent = async (payload: Object) => {
       headers
     )
     .then(() => {
-      return getStudents();
+      return getStudents(1, false);
     })
     .catch((response) => {
       return response.response ? response.response.status : 500;
