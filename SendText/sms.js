@@ -19,7 +19,7 @@ const client = new TeleSignSDK(
 );
 
 function messageCallback(error, responseBody, personName, personNumber) {
-  console.log(responseBody)
+  console.log(responseBody);
   if (error === null) {
     console.log(`🟩 SMS SUCCESS SENDED TO ${personName} - ${personNumber}`);
   } else {
@@ -39,15 +39,15 @@ nodeCron.schedule(
 console.log("🐬 Everyone will be set as Not Paid at day 1st every month.");
 
 // 01 30 12 10 * * -> Dia 10 de cada mês às 12h30
-nodeCron.schedule("50 40 00 10 * *", async () => {
+nodeCron.schedule("01 30 12 10 * *", async () => {
   const students = await getStudents();
   let i = 0;
   const Timer = setInterval(() => {
-    if(students[i]) {
-      const student = students[i]
+    if (students[i]) {
+      const student = students[i];
       if (!student.attributes.Paid) {
-        let phoneNumber = student.attributes.ParentContact
-        if(phoneNumber.indexOf("+") === -1) {
+        let phoneNumber = student.attributes.ParentContact;
+        if (phoneNumber.indexOf("+") === -1) {
           phoneNumber = "+351" + student.attributes.ParentContact;
         }
         client.sms.message(
@@ -60,24 +60,28 @@ nodeCron.schedule("50 40 00 10 * *", async () => {
             ),
           phoneNumber,
           `Caro Enc. Educação,
-  Atingiu o limite de pagamento da mensalidade da dança. A partir do dia de hoje terá um acréscimo de 0,50€ por dia.
-  Podem fazer o pagamento no local, por transferência bancária ou mbway.
-  Ficam aqui as referências:
-  Mbway: 912642786
-  NIB: 0036 0169 99100030447 49.
-  (Caso o façam desta forma peço que confirmem).
-  Preciso da vossa compreensão nesse sentido.
-  Cumprimentos,
-  StarDancers.`,
+Atingiu o limite de pagamento da mensalidade da dança. A partir do dia de hoje terá um acréscimo de 0,50€ por dia.
+Podem fazer o pagamento no local, por transferência bancária ou mbway.
+Ficam aqui as referências:
+Mbway: 912642786
+NIB: 0036 0169 99100030447 49.
+(Caso o façam desta forma peço que confirmem).
+Preciso da vossa compreensão nesse sentido.
+Cumprimentos,
+StarDancers.`,
           "ARN"
         );
       }
       i++;
     } else {
-      clearInterval(Timer)
+      clearInterval(Timer);
       i = 0;
+      console.log("");
+      console.log("⚡ Done for today - ", new Date());
+      console.log("---------------------------------------------------");
+      console.log("");
     }
-  }, 1000);
+  }, 3000);
 });
 console.log(
   "🐬 Not Paid students will receive a sms text day 10th every month."
