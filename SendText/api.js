@@ -11,6 +11,8 @@ const headers = {
   },
 };
 
+export const sleep = ms => new Promise(r => setTimeout(r, ms));
+
 const resetJob = async (id) => {
   return axios
     .put(
@@ -26,13 +28,14 @@ const resetJob = async (id) => {
 export const getStudents = async () => {
   return axios
     .get(
-      `${apiAddress}/api/students?publicationState=live&pagination[page]=1&pagination[pageSize]=9999`,
+      `${apiAddress}/api/students?filters[Paid][$eq]=false`,
       headers
     )
     .then((response) => {
-      return response.data.data.reverse();
+      return response.data.data;
     })
     .catch((response) => {
+      console.log(response)
       return response.response ? response.response.status : 500;
     });
 };
@@ -40,7 +43,7 @@ export const getStudents = async () => {
 export const resetJobs = async () => {
   return axios
     .get(
-      `${apiAddress}/api/students?publicationState=live&pagination[page]=1&pagination[pageSize]=9999`,
+      `${apiAddress}/api/students?filters[Paid][$eq]=true`,
       headers
     )
     .then((response) => {
