@@ -33,7 +33,12 @@ export default {
   methods: {
     async pay(id: any, status: Boolean) {
       this.loading = id;
-      [this.students, this.pagination] = await setStudent("Paid", status, id, this.query.length > 0);
+      [this.students, this.pagination] = await setStudent(
+        "Paid",
+        status,
+        id,
+        this.query.length > 0
+      );
       this.loading = false;
     },
     async update(id: any, payload: Object) {
