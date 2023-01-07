@@ -25,14 +25,15 @@ const resetJob = async (id) => {
     .then(() => true);
 };
 
-export const getStudents = async () => {
+export const getStudents = async (page) => {
+  let filters = page ? `&pagination[page]=${page}` : '';
   return axios
     .get(
-      `${apiAddress}/api/students?filters[Paid][$eq]=false`,
+      `${apiAddress}/api/students?filters[Paid][$eq]=false${filters}`,
       headers
     )
     .then((response) => {
-      return response.data.data;
+      return response.data;
     })
     .catch((response) => {
       console.log(response)
@@ -46,8 +47,13 @@ export const resetJobs = async () => {
       `${apiAddress}/api/students?filters[Paid][$eq]=true`,
       headers
     )
-    .then((response) => {
-      return response.data.data.forEach((student) => resetJob(student.id));
+    .then(async (response) => {
+      if(response.data.meta.pagination.pageCount > 1) {
+        await response.data.data.forEach(async (student) => resetJob(student.id));
+        resetJobs();
+      } else {
+        return response.data.data.forEach(async (student) => resetJob(student.id));
+      }       
     })
     .catch((response) => {
       throw response;
