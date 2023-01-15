@@ -8,6 +8,7 @@ import {
   updatePassword,
   removeCookie,
   searchStudents,
+  getBirthdays,
 } from "../redux/calls.d";
 import Modal from "../components/table/ModalTable.vue";
 import TableList from "@/components/table/TableList.vue";
@@ -26,6 +27,7 @@ export default {
       menu: <Boolean>false,
       password: <Boolean>false,
       student: {},
+      birtdays: <Array<any>>[],
       page: <Number>1,
       pagination: <any>{},
     };
@@ -56,19 +58,20 @@ export default {
     },
     createLocal() {
       let data = {
-        id: 0,
+        id: <number>0,
         attributes: {
-          Name: "",
-          ParentName: "",
-          ParentContact: "",
-          ParentEmail: "",
-          ParentNIF: "",
-          Class: "",
-          Price: 0,
-          Observations: "",
-          ImageRights: false,
-          Paid: false,
-          Week: [],
+          Name: <string>"",
+          ParentName: <string>"",
+          ParentContact: <string>"",
+          ParentEmail: <string>"",
+          ParentNIF: <string>"",
+          Class: <string>"",
+          Price: <number>0,
+          Observations: <string>"",
+          ImageRights: <boolean>false,
+          Paid: <boolean>false,
+          Week: <Array<string>>[],
+          BornDate: <Date>new Date(),
         },
       };
       this.student = data;
@@ -121,6 +124,9 @@ export default {
     } else {
       this.username = user;
     }
+    const birtdays = await getBirthdays();
+    this.birtdays = birtdays;
+    console.log(birtdays);
     [this.students, this.pagination] = await getStudents(this.page, false);
   },
 };
@@ -137,6 +143,28 @@ export default {
       <div class="max-sm:pl-10 max-sm:w-full">
         <h1 class="text-2xl">Olá {{ username }} 👋</h1>
       </div>
+      <div id="tooltip" class="w-30 mr-12">
+        <div class="pt-1 text-slate-600 font-bold relative">
+          🎂 {{ birtdays.length }} aniversário{{
+            birtdays.length !== 1 ? "s" : ""
+          }}
+          hoje.
+          <div
+            role="tooltip"
+            class="top-10 left-0 w-full absolute z-10 inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm tooltip dark:bg-gray-700"
+          >
+            <span
+              class="ellipsis w-30 block"
+              role="tooltip"
+              v-for="name in birtdays"
+              :key="name.id"
+            >
+              {{ name.attributes.Name }}
+            </span>
+          </div>
+        </div>
+      </div>
+
       <div
         class="flex justify-center flex-col w-auto title max-sm:pr-10"
         :style="{ alignItems: 'end' }"
@@ -184,6 +212,7 @@ export default {
             ></path>
           </svg>
         </button>
+
         <DropdownMenu
           v-if="menu"
           :logout="logout"

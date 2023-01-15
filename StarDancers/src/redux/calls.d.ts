@@ -40,6 +40,28 @@ export const removeCookie: RemoveCookie = async (key: String) => {
   return true;
 };
 
+export const getBirthdays: GetBirthdays = async () => {
+  const date = <date>new Date();
+  const filters = <string>(
+    `${("0" + (date.getMonth() + 1)).slice(-2)}-${date.getDate()}`
+  );
+
+  return axios
+    .get(
+      `${
+        import.meta.env.VITE_ADDRESS
+      }/api/students?filters[BornDate][$endsWith]=${filters}`,
+      headers
+    )
+    .then((response) => {
+      return response.data.data;
+    })
+    .catch((response) => {
+      console.log(response);
+      return response.response ? response.response.status : 500;
+    });
+};
+
 export const getStudents: GetStudents = async (page: Number, withFilters) => {
   oficialPage = page;
   if (!withFilters) {

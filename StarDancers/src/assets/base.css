@@ -118,6 +118,18 @@ body {
 table tr:nth-child(even) {
   background-color: rgb(249 250 251);
 }
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#tooltip > div > div {
+  display: none;
+}
+#tooltip:hover > div > div {
+  display: block;
+}
 
 @keyframes entry {
   0% {
