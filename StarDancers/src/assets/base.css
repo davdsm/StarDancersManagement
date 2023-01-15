@@ -128,7 +128,7 @@ table tr:nth-child(even) {
   display: none;
 }
 #tooltip:hover > div > div {
-  display: block;
+  display: inline-block;
 }
 
 @keyframes entry {

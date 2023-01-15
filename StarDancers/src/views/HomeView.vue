@@ -143,15 +143,15 @@ export default {
       <div class="max-sm:pl-10 max-sm:w-full">
         <h1 class="text-2xl">Olá {{ username }} 👋</h1>
       </div>
-      <div id="tooltip" class="w-30 mr-12">
-        <div class="pt-1 text-slate-600 font-bold relative">
+      <div id="tooltip" class="w-30 mr-12 max-sm:absolute max-sm:w-full max-sm:text-center max-sm:top-40">
+        <div class="pt-1 text-slate-600 font-bold max-sm:flex max-sm:justify-center max-sm:items-center">
           🎂 {{ birtdays.length }} aniversário{{
             birtdays.length !== 1 ? "s" : ""
           }}
           hoje.
           <div
             role="tooltip"
-            class="top-10 left-0 w-full absolute z-10 inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm tooltip dark:bg-gray-700"
+            class="top-10 left-0 w-full absolute z-10 inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 rounded-lg shadow-sm tooltip bg-gray-700 max-sm:w-40 max-sm:mx-auto max-sm:left-auto"
           >
             <span
               class="ellipsis w-30 block"
