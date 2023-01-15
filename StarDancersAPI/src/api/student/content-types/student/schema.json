@@ -54,6 +54,9 @@
     "Week": {
       "type": "json",
       "required": true
+    },
+    "BornDate": {
+      "type": "date"
     }
   }
 }
