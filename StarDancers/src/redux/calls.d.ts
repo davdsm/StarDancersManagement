@@ -43,7 +43,7 @@ export const removeCookie: RemoveCookie = async (key: String) => {
 export const getBirthdays: GetBirthdays = async () => {
   const date = <date>new Date();
   const filters = <string>(
-    `${("0" + (date.getMonth() + 1)).slice(-2)}-${("0" + (date.getDate() + 1)).slice(-2)}`
+    `${("0" + (date.getMonth() + 1)).slice(-2)}-${("0" + date.getDate()).slice(-2)}`
   );
 
   return axios
