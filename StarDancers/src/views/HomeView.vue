@@ -10,7 +10,7 @@ import {
   searchStudents,
   getBirthdays,
 } from "../redux/calls.d";
-import Modal from "../components/table/ModalTable.vue";
+import Modal from "@/components/table/ModalTable.vue";
 import TableList from "@/components/table/TableList.vue";
 import PasswordModal from "@/components/login/PasswordModal.vue";
 import DropdownMenu from "@/components/DropdownMenu.vue";
@@ -44,11 +44,18 @@ export default {
       this.loading = false;
     },
     async update(id: any, payload: Object) {
-      this.showModal = false;
       const data = Object.assign({}, payload);
       this.loading = id;
-      [this.students, this.pagination] = await setStudent("Profile", data, id);
+      const [success, pagination] = await setStudent("Profile", data, id);
       this.loading = false;
+      if(success) {
+        this.showModal = false;
+        this.students = success;
+        this.pagination = pagination
+        return 200;
+      } else {
+        return pagination
+      }
     },
     async delete(id: Number) {
       this.loading = id;
@@ -79,9 +86,15 @@ export default {
     },
     async create(payload: Object) {
       const data = Object.assign({}, payload);
-      [this.students, this.pagination] = await createStudent(data);
+      const[sucess, pagination] = await createStudent(data);
+      if (!sucess) {
+        return pagination;
+      }
+      this.students = sucess;
+      this.pagination = pagination;
       this.showModal = false;
       this.loading = false;
+      return 200
     },
     async putPassword(password: String) {
       await updatePassword(password);
@@ -143,8 +156,13 @@ export default {
       <div class="max-sm:pl-10 max-sm:w-full">
         <h1 class="text-2xl">Olá {{ username }} 👋</h1>
       </div>
-      <div id="tooltip" class="w-30 mr-12 max-sm:absolute max-sm:w-full max-sm:text-center max-sm:top-40">
-        <div class="pt-1 text-slate-600 font-bold max-sm:flex max-sm:justify-center max-sm:items-center">
+      <div
+        id="tooltip"
+        class="w-30 mr-12 max-sm:absolute max-sm:w-full max-sm:text-center max-sm:top-40"
+      >
+        <div
+          class="pt-1 text-slate-600 font-bold max-sm:flex max-sm:justify-center max-sm:items-center"
+        >
           🎂 {{ birtdays.length }} aniversário{{
             birtdays.length !== 1 ? "s" : ""
           }}

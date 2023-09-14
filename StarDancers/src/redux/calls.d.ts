@@ -43,7 +43,9 @@ export const removeCookie: RemoveCookie = async (key: String) => {
 export const getBirthdays: GetBirthdays = async () => {
   const date = <date>new Date();
   const filters = <string>(
-    `${("0" + (date.getMonth() + 1)).slice(-2)}-${("0" + date.getDate()).slice(-2)}`
+    `${("0" + (date.getMonth() + 1)).slice(-2)}-${("0" + date.getDate()).slice(
+      -2
+    )}`
   );
 
   return axios
@@ -124,7 +126,9 @@ export const setStudent: SetStudent = async (
       return getStudents(oficialPage, search);
     })
     .catch((response) => {
-      return response.response ? response.response.status : 500;
+      return response.response
+        ? [false, response.response.data.error.message]
+        : 500;
     });
 };
 
@@ -154,7 +158,9 @@ export const createStudent: CreateStudent = async (payload: Object) => {
       return getStudents(1, false);
     })
     .catch((response) => {
-      return response.response ? response.response.status : 500;
+      return response.response
+        ? [false, response.response.data.error.message]
+        : 500;
     });
 };
 

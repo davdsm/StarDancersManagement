@@ -1,8 +1,9 @@
 <script lang="ts" type="text/x-template" id="table-modal">
 import DeletePoup from "./DeletePoup.vue";
+import ErrorModal from "./ErrorModal.vue";
 
 export default {
-  props: ["close", "student", "update", "delete", "create"],
+  props: ["close", "student", "update", "delete", "create", "error"],
   data() {
     return {
       local_student: JSON.parse(JSON.stringify(this.student)),
@@ -18,19 +19,27 @@ export default {
         "Domingo",
       ],
       that: this,
+      errorMsg: this.error,
     };
   },
   methods: {
-    submit(e: any) {
+    async submit(e: any) {
       e.preventDefault();
+      let success: 200 | string = "";
       if (this.local_student.id === 0) {
-        this.create(this.local_student.attributes);
+        success = await this.create(this.local_student.attributes);
       } else {
-        this.update(this.local_student.id, this.local_student.attributes);
+        success = await this.update(
+          this.local_student.id,
+          this.local_student.attributes
+        );
+      }
+      if (typeof success === "string") {
+        this.errorMsg = success;
       }
     },
   },
-  components: { DeletePoup },
+  components: { DeletePoup, ErrorModal },
 };
 </script>
 
@@ -360,5 +369,10 @@ export default {
     :name="student.attributes.Name"
     :no="() => (deleteConfirmation = false)"
     :yes="() => that.delete(student.id)"
+  />
+  <ErrorModal
+    v-if="errorMsg"
+    :msg="errorMsg"
+    :close="() => (errorMsg = false)"
   />
 </template>
