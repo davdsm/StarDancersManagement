@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import TeleSignSDK from "telesignsdk";
 import nodeCron from "node-cron";
+import request from "request";
 import { getStudents, resetJobs, sleep } from "./api.js";
 
 dotenv.config();
@@ -43,6 +44,7 @@ const sendText = async (page) => {
   const metaStudents = await getStudents(page);
   let i = 0;
   const students = metaStudents.data;
+  const parents = [];
   const Timer = setInterval(() => {
     if (students[i]) {
       const student = students[i];
@@ -51,6 +53,9 @@ const sendText = async (page) => {
         if (phoneNumber.indexOf("+") === -1) {
           phoneNumber = "+351" + student.attributes.ParentContact;
         }
+
+        parents.push(student.attributes.ParentName)
+
         console.log(student.attributes.ParentName)
 
         /* client.sms.message(
@@ -66,13 +71,14 @@ const sendText = async (page) => {
           Caro Encarregado de educação ${student.attributes.ParentName},
           StarDancers_dance_studio, vem por este meio lembrá-lo(a) que o vencimento da mensalidade das aulas de dança do seu educando termina hoje, dia 8. 
           O contato serve para lembrar a regularização da situação para evitar a coima e garantir a vaga do seu educando. 
-          
+
           Estamos à disposição para esclarecer eventuais dúvidas. 
-          
+
           Atenciosamente,
           StarDancers.
-          
-          (Em caso de pagamento por transferência multibanco é obrigatório o comprovativo para assim a situação ficar como regularizada).`,
+
+          (Em caso de pagamento por transferência multibanco é obrigatório o comprovativo para assim a situação ficar como regularizada).
+          `,
           "ARN"
         ); */
         outSMS += 1;
@@ -89,8 +95,30 @@ const sendText = async (page) => {
         console.log("");
         console.log("📳 SMS Out - ", outSMS);
         console.log("⚡ Done for today - ", new Date());
-        console.log("---------------------------------------------------");
-        console.log("");
+
+        // send email noticing admin
+        request({
+          url: "http://localhost:3000/sendMail",
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+            "davdsmKey": 'd41d8cd98f00b204e9800998ecf8427e'  // <--Very important!!!
+          },
+          body: JSON.stringify({
+            sender: "⭐ StarDancers",
+            receiver: {
+              email: "samuel_david_8@hotmail.com",
+              name: "Ana"
+            },
+            subject: `✈️ (${parents.length}) SMS Enviados`,
+            message: `<h3>Olá Ana</h3><p>Este mês sairam ${parents.length} mensagens, segue a lista de pais que receberam o aviso de não pagamento:<br/> ${parents.map(parent => `${parent} <br/>`)}</p><br/><br/>Obrigada.<br/><b>Star Dancers App</b>`
+          })
+        }, function (error, response, body) {
+          console.log("✈️ Email Enviado? - ", response.body);
+          console.log("---------------------------------------------------");
+          console.log("");
+        });
+        
       }
 
     }
