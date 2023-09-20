@@ -52,7 +52,8 @@ const sendText = async (page) => {
           phoneNumber = "+351" + student.attributes.ParentContact;
         }
         console.log(student.attributes.ParentName)
-        client.sms.message(
+
+        /* client.sms.message(
           (error, responseBody) =>
             messageCallback(
               error,
@@ -61,16 +62,19 @@ const sendText = async (page) => {
               student.attributes.ParentContact
             ),
           phoneNumber,
-          `Caro Enc. Educação ${student.attributes.ParentName},
-
-          Hoje é o limite de pagamento da mensalidade da dança. Terá de ser efetuada até ao final do dia de hoje com pena de um acréscimo de 0,50€ por dia a partir de amanhã.
-          Passando a data limite peço que se dirija ao balcão da academia para regularizar a situação.
-          Agradeço a vossa compreensão nesse sentido.
-          Cumprimentos,
-
-          StarDancers*`,
+          `
+          Caro Encarregado de educação ${student.attributes.ParentName},
+          StarDancers_dance_studio, vem por este meio lembrá-lo(a) que o vencimento da mensalidade das aulas de dança do seu educando termina hoje, dia 8. 
+          O contato serve para lembrar a regularização da situação para evitar a coima e garantir a vaga do seu educando. 
+          
+          Estamos à disposição para esclarecer eventuais dúvidas. 
+          
+          Atenciosamente,
+          StarDancers.
+          
+          (Em caso de pagamento por transferência multibanco é obrigatório o comprovativo para assim a situação ficar como regularizada).`,
           "ARN"
-        );
+        ); */
         outSMS += 1;
       }
 
@@ -78,7 +82,7 @@ const sendText = async (page) => {
     } else {
       clearInterval(Timer);
       i = 0;
-      if(metaStudents.meta.pagination.pageCount !== metaStudents.meta.pagination.page) {
+      if (metaStudents.meta.pagination.pageCount !== metaStudents.meta.pagination.page) {
         pageCount += 1;
         sendText(pageCount)
       } else {
@@ -97,9 +101,11 @@ console.log("🐬 Everyone will be set as Not Paid at day 1st every month.");
 
 // 01 30 12 10 * * -> Dia 10 de cada mês às 12h30
 
-nodeCron.schedule("01 30 12 10 * *", async () => {
+/* nodeCron.schedule("01 30 12 10 * *", async () => {
   sendText();
-});
+}); */
+
+sendText();
 
 console.log(
   "🐬 Not Paid students will receive a sms text day 10th every month."
