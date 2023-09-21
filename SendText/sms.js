@@ -58,7 +58,7 @@ const sendText = async (page) => {
 
         console.log(student.attributes.ParentName)
 
-        /* client.sms.message(
+        client.sms.message(
           (error, responseBody) =>
             messageCallback(
               error,
@@ -67,20 +67,18 @@ const sendText = async (page) => {
               student.attributes.ParentContact
             ),
           phoneNumber,
-          `
-          Caro Encarregado de educação ${student.attributes.ParentName},
+          `Caro Encarregado de educação ${student.attributes.ParentName},
           StarDancers_dance_studio, vem por este meio lembrá-lo(a) que o vencimento da mensalidade das aulas de dança do seu educando termina hoje, dia 8. 
           O contato serve para lembrar a regularização da situação para evitar a coima e garantir a vaga do seu educando. 
-
           Estamos à disposição para esclarecer eventuais dúvidas. 
-
+          
           Atenciosamente,
           StarDancers.
-
+          
           (Em caso de pagamento por transferência multibanco é obrigatório o comprovativo para assim a situação ficar como regularizada).
           `,
           "ARN"
-        ); */
+        );
         outSMS += 1;
       }
 
@@ -98,7 +96,7 @@ const sendText = async (page) => {
 
         // send email noticing admin
         request({
-          url: "http://localhost:3000/sendMail",
+          url: "http://api.davdsm.pt:8030/sendMail",
           method: "POST",
           headers: {
             'Content-Type': 'application/json',
@@ -107,8 +105,8 @@ const sendText = async (page) => {
           body: JSON.stringify({
             sender: "⭐ StarDancers",
             receiver: {
-              email: "samuel_david_8@hotmail.com",
-              name: "Ana"
+              email: "stardancers2017@gmail.com",
+              name: "Admnistradora Ana"
             },
             subject: `✈️ (${parents.length}) SMS Enviados`,
             message: `<h3>Olá Ana</h3><p>Este mês sairam ${parents.length} mensagens, segue a lista de pais que receberam o aviso de não pagamento:<br/> ${parents.map(parent => `${parent} <br/>`)}</p><br/><br/>Obrigada.<br/><b>Star Dancers App</b>`
@@ -118,7 +116,7 @@ const sendText = async (page) => {
           console.log("---------------------------------------------------");
           console.log("");
         });
-        
+
       }
 
     }
@@ -127,13 +125,12 @@ const sendText = async (page) => {
 
 console.log("🐬 Everyone will be set as Not Paid at day 1st every month.");
 
-// 01 30 12 10 * * -> Dia 10 de cada mês às 12h30
+// 01 00 18 10 * * -> Dia 10 de cada mês às 18h00
 
-/* nodeCron.schedule("01 30 12 10 * *", async () => {
+nodeCron.schedule("01 00 18 10 * *", async () => {
   sendText();
-}); */
+});
 
-sendText();
 
 console.log(
   "🐬 Not Paid students will receive a sms text day 10th every month."
