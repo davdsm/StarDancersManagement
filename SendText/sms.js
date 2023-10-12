@@ -133,6 +133,6 @@ nodeCron.schedule("01 00 18 8 * *", async () => {
 
 
 console.log(
-  "🐬 Not Paid students will receive a sms text day 10th every month."
+  "🐬 Not Paid students will receive a sms text day 8 every month."
 );
 console.log("");
