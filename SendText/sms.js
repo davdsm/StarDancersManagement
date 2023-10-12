@@ -125,9 +125,9 @@ const sendText = async (page) => {
 
 console.log("🐬 Everyone will be set as Not Paid at day 1st every month.");
 
-// 01 00 18 10 * * -> Dia 10 de cada mês às 18h00
+// 01 00 18 8 * * -> Dia 8 de cada mês às 18h00
 
-nodeCron.schedule("01 00 18 10 * *", async () => {
+nodeCron.schedule("01 00 18 8 * *", async () => {
   sendText();
 });
 
