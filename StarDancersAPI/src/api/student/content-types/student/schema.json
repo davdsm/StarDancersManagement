@@ -57,6 +57,9 @@
     },
     "BornDate": {
       "type": "date"
+    },
+    "StudentID": {
+      "type": "string"
     }
   }
 }

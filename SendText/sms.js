@@ -7,6 +7,13 @@ import { getStudents, resetJobs, sleep } from "./api.js";
 dotenv.config();
 
 const debug = false;
+let errorContacts = [];
+
+/*
+* Save the list of parents that received an SMS in order to not duplicate sms receivers
+* and to send Sara the list of parents that received SMS.
+*/
+const parents = [];
 
 const debugContacts = {
   "0": {
@@ -56,16 +63,16 @@ const debugContacts = {
 }
 
 async function sendSMS(phoneNumber, parentName) {
-  console.log(`enviou mensagem para ${phoneNumber} - ${parentName}`)
   const text = `${debug ? "---ISTO É UM TESTE PARA DAVID E ANA--- " : ''}Caro Encarregado de educação ${parentName},
   StarDancers_dance_studio, vem por este meio lembrá-lo(a) que o vencimento da mensalidade das aulas de dança do seu educando termina hoje, dia 8. 
-  O contato serve para lembrar a regularização da situação para evitar a coima e garantir a vaga do seu educando. 
+  No entanto, gostaríamos de salientar que a aplicação de qualquer coima só ocorrerá a partir do dia 10 em diante, caso o pagamento não seja efetuado até lá. 
+  O contato serve para lembrar a regularização da situação para garantir a vaga do seu educando. 
   Estamos à disposição para esclarecer eventuais dúvidas. 
   
   Atenciosamente,
   StarDancers.
   
-  (Em caso de pagamento por transferência multibanco é obrigatório o comprovativo para assim a situação ficar como regularizada).
+  (Em caso de pagamento por transferência multibanco é obrigatório o comprovativo para assim a situação ficar como regularizada)
   `
 
   /*
@@ -79,14 +86,17 @@ async function sendSMS(phoneNumber, parentName) {
   client.messages
     .create({
       body: text,
-      messagingServiceSid: 'MG0388ce12f9c96501c9997348edbbf75a',
+      messagingServiceSid: 'MG23ac2229bf53017625d9c3d9e095b47c',
       to: phoneNumber
     }, function (error, message) {
       if (error) {
+        errorContacts.push(`${phoneNumber}(${parentName})`)
         console.log(`There is an error with ${phoneNumber}(${parentName}).`);
         console.log(`${error}, ${message}`);
       }
     })
+
+  console.log(`enviou mensagem para ${phoneNumber} - ${parentName}`)
 }
 
 function sendEmail(parents) {
@@ -105,11 +115,11 @@ function sendEmail(parents) {
     body: JSON.stringify({
       sender: "⭐ StarDancers",
       receiver: {
-        email: debug ? "geral@davdsm.pt" : "stardancers2017@gmail.com",
+        email: debug ? "samuel_david_8@hotmail.com" : "stardancers2017@gmail.com",
         name: "Admnistradora Ana"
       },
       subject: `✈️ (${parents.length}) SMS Enviados`,
-      message: `<h3>Olá Ana</h3><p>Este mês sairam ${parents.length} mensagens, segue a lista de pais que receberam o aviso de não pagamento:<br/> ${parents.map(parent => `${parent} <br/>`)}</p><br/><br/>Obrigada.<br/><b>Star Dancers App</b>`
+      message: `<h3>Olá Ana</h3><p>Este mês sairam ${parents.length} mensagens, segue a lista de pais que receberam o aviso de não pagamento:<br/> ${parents.map(parent => `${parent} <br/>`)}</p>Contactos com erro: ${errorContacts.map(contact => `${contact} <br/>`)}<br/><br/><br/>Obrigada.<br/><b>Star Dancers App</b>`
     })
   }, function (error, response, body) {
     console.log("✈️ Email Enviado? - ", response.body);
@@ -156,11 +166,6 @@ const goThroughUsers = async (page) => {
   */
   let i = 0;
 
-  /*
-  * Save the list of parents that received an SMS in order to not duplicate sms receivers
-  * and to send Sara the list of parents that received SMS.
-  */
-  const parents = [];
 
   /*
   * Send a text every 5 seconds so
@@ -207,9 +212,9 @@ const goThroughUsers = async (page) => {
       * if page count is diferent than the current page,
       * run this function again but with pageCount increased
       */
-      if (metaStudents.meta.pagination.pageCount !== metaStudents.meta.pagination.page) {
+      if (metaStudents.meta.pagination.pageCount !== metaStudents.meta.pagination.page && !debug) {
         pageCount += 1;
-        sendText(pageCount)
+        goThroughUsers(pageCount)
       } else {
         sendEmail(parents)
         console.log(`-- finish --`);
@@ -228,12 +233,13 @@ console.log(
 // 01 00 18 8 * * -> Dia 8 de cada mês às 18h00
 
 nodeCron.schedule("01 00 18 8 * *", async () => {
+  errorContacts = [];
   goThroughUsers();
 });
 
 console.log("");
 
 if (debug) {
+  errorContacts = [];
   goThroughUsers();
 }
-
