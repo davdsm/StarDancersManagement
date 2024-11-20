@@ -48,7 +48,7 @@ export default {
       this.loading = id;
       const [success, pagination] = await setStudent("Profile", data, id);
       this.loading = false;
-      if(success) {
+      if (success) {
         this.showModal = false;
         this.students = success;
         this.pagination = pagination
@@ -79,6 +79,7 @@ export default {
           Paid: <boolean>false,
           Week: <Array<string>>[],
           BornDate: <Date>new Date(),
+          StudentID: <string>0
         },
       };
       this.student = data;
@@ -86,7 +87,7 @@ export default {
     },
     async create(payload: Object) {
       const data = Object.assign({}, payload);
-      const[sucess, pagination] = await createStudent(data);
+      const [sucess, pagination] = await createStudent(data);
       if (!sucess) {
         return pagination;
       }
@@ -146,106 +147,52 @@ export default {
 </script>
 
 <template class="bg-slate-100">
-  <PasswordModal
-    v-if="password"
-    :close="() => (password = false)"
-    :putPassword="putPassword"
-  />
+  <PasswordModal v-if="password" :close="() => (password = false)" :putPassword="putPassword" />
   <main class="container mx-auto sm:pl-20 sm:pr-20">
     <header class="flex justify-between entry pt-20 pb-20 w-full z-20">
       <div class="max-sm:pl-10 max-sm:w-full">
         <h1 class="text-2xl">Olá {{ username }} 👋</h1>
       </div>
-      <div
-        id="tooltip"
-        class="w-30 mr-12 max-sm:absolute max-sm:w-full max-sm:text-center max-sm:top-40"
-      >
-        <div
-          class="pt-1 text-slate-600 font-bold max-sm:flex max-sm:justify-center max-sm:items-center"
-        >
+      <div id="tooltip" class="w-30 mr-12 max-sm:absolute max-sm:w-full max-sm:text-center max-sm:top-40">
+        <div class="pt-1 text-slate-600 font-bold max-sm:flex max-sm:justify-center max-sm:items-center">
           🎂 {{ birtdays.length }} aniversário{{
             birtdays.length !== 1 ? "s" : ""
           }}
           hoje.
-          <div
-            role="tooltip"
-            class="top-10 left-0 w-full absolute z-10 inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 rounded-lg shadow-sm tooltip bg-gray-700 max-sm:w-40 max-sm:mx-auto max-sm:left-auto"
-          >
-            <span
-              class="ellipsis w-30 block"
-              role="tooltip"
-              v-for="name in birtdays"
-              :key="name.id"
-            >
+          <div role="tooltip"
+            class="top-10 left-0 w-full absolute z-10 inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 rounded-lg shadow-sm tooltip bg-gray-700 max-sm:w-40 max-sm:mx-auto max-sm:left-auto">
+            <span class="ellipsis w-30 block" role="tooltip" v-for="name in birtdays" :key="name.id">
               {{ name.attributes.Name }}
             </span>
           </div>
         </div>
       </div>
 
-      <div
-        class="flex justify-center flex-col w-auto title max-sm:pr-10"
-        :style="{ alignItems: 'end' }"
-      >
-        <button
-          id="dropdownDefault"
-          data-dropdown-toggle="dropdown"
-          class="flex items-center justify-center w-24 yellow p-3 rounded-lg cursor-pointer"
-          type="button"
-          @click="() => (menu = !menu)"
-        >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-            ></path>
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-            ></path>
+      <div class="flex justify-center flex-col w-auto title max-sm:pr-10" :style="{ alignItems: 'end' }">
+        <button id="dropdownDefault" data-dropdown-toggle="dropdown"
+          class="flex items-center justify-center w-24 yellow p-3 rounded-lg cursor-pointer" type="button"
+          @click="() => (menu = !menu)">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+            </path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z">
+            </path>
           </svg>
-          <svg
-            class="ml-2 w-4 h-4"
-            aria-hidden="true"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 9l-7 7-7-7"
-            ></path>
+          <svg class="ml-2 w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
           </svg>
         </button>
 
-        <DropdownMenu
-          v-if="menu"
-          :logout="logout"
-          :openPassword="
-            () => {
-              menu = false;
-              password = true;
-            }
-          "
-        />
+        <DropdownMenu v-if="menu" :logout="logout" :openPassword="() => {
+            menu = false;
+            password = true;
+          }
+          " />
       </div>
     </header>
-    <div
-      class="entry w-full flex flex-col bg-white pt-12 pb-12 shadow-davdsm rounded-lg delay"
-    >
+    <div class="entry w-full flex flex-col bg-white pt-12 pb-12 shadow-davdsm rounded-lg delay">
       <div class="w-full md:grid md:grid-cols-3 gap-3 pr-16 pl-16">
         <div class="md:col-span-2">
           <header>
@@ -257,28 +204,14 @@ export default {
             </p>
           </header>
         </div>
-        <div
-          class="md:flex max-sm:pt-10 max-sm:pb-10 justify-end max-sm:justify-start md:grid md:grid-cols-2 gap-2"
-        >
+        <div class="md:flex max-sm:pt-10 max-sm:pb-10 justify-end max-sm:justify-start md:grid md:grid-cols-2 gap-2">
           <div class="max-sm:w-full">
-            <button
-              @click="createLocal"
-              type="button"
-              class="flex items-center justify-left text-white transition w-full rounded yellow px-6 py-3 cursor-pointer font-medium text-sm px-5 py-2.5 mr-2 mb-2"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-6 h-6 mr-5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
+            <button @click="createLocal" type="button"
+              class="flex items-center justify-left text-white transition w-full rounded yellow px-6 py-3 cursor-pointer font-medium text-sm px-5 py-2.5 mr-2 mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-6 h-6 mr-5">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
 
               Adicionar
@@ -288,78 +221,35 @@ export default {
             <form class="flex items-center" @submit="(e) => search(e)">
               <label for="simple-search" class="sr-only">Pesquisa</label>
               <div class="relative w-full">
-                <div
-                  class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none z-10 max-sm:hidden"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="w-5 h-5 text-gray-500"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fill-rule="evenodd"
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none z-10 max-sm:hidden">
+                  <svg aria-hidden="true" class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
                       d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                      clip-rule="evenodd"
-                    ></path>
+                      clip-rule="evenodd"></path>
                   </svg>
                 </div>
-                <input
-                  type="search"
-                  id="simple-search"
-                  v-model="query"
+                <input type="search" id="simple-search" v-model="query"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full max-sm:pl-4 md:pl-10 p-2.5"
-                  placeholder="Search"
-                />
+                  placeholder="Search" />
               </div>
               <button type="submit" class="hidden">Submit</button>
-              <button
-                type="reset"
-                class="ml-3"
-                v-if="query"
-                @click="clearSearch"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="w-6 h-6"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
+              <button type="reset" class="ml-3" v-if="query" @click="clearSearch">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </button>
             </form>
           </div>
         </div>
       </div>
-      <TableList
-        v-if="students.length > 0"
-        :students="students"
-        :loading="loading"
-        :show="(item: any) => ((student = item), (showModal = true))"
-        :student="student"
-        :pay="pay"
-      />
+      <TableList v-if="students.length > 0" :students="students" :loading="loading"
+        :show="(item: any) => ((student = item), (showModal = true))" :student="student" :pay="pay" />
     </div>
-    <PaginationTable
-      :page="page"
-      :pagination="pagination"
-      :handlePagination="handlePagination"
-    />
-    <modal
-      v-if="showModal"
-      :close="() => (showModal = false)"
-      :update="update"
-      :delete="delete"
-      :create="create"
-      v-bind:student="student"
-    />
+    <PaginationTable :page="page" :pagination="pagination" :handlePagination="handlePagination" />
+    <modal v-if="showModal" :close="() => (showModal = false)" :update="update" :delete="delete" :create="create"
+      v-bind:student="student" />
   </main>
 </template>

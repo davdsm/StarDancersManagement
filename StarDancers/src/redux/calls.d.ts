@@ -87,7 +87,7 @@ export const getStudents: GetStudents = async (page: Number, withFilters) => {
 
 export const searchStudents: SearchStudents = async (word: String) => {
   if (word) {
-    filters = `&filters[$or][0][Name][$containsi]=${word}&filters[$or][1][ParentName][$containsi]=${word}&filters[$or][2][ParentEmail][$containsi]=${word}&filters[$or][3][Class][$containsi]=${word}&filters[$or][4][ParentContact][$containsi]=${word}`;
+    filters = `&filters[$or][0][Name][$containsi]=${word}&filters[$or][1][ParentName][$containsi]=${word}&filters[$or][2][ParentEmail][$containsi]=${word}&filters[$or][3][Class][$containsi]=${word}&filters[$or][4][ParentContact][$containsi]=${word}&filters[$or][5][StudentID][$containsi]=${word}`;
     return axios
       .get(
         `${import.meta.env.VITE_ADDRESS}/api/students?sort=id:desc${filters}`,
