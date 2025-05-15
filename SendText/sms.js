@@ -136,7 +136,7 @@ const day1st = "00 01 00 1 * *";
 nodeCron.schedule(
   day1st, // 1st Every Month at 9am
   async () => {
-    await resetJobs();
+    // await resetJobs();
     console.log("👪 Everyone Reseted");
   }
 );
@@ -195,7 +195,11 @@ const goThroughUsers = async (page) => {
         */
         if (!parents.find(parentName => parentName === student.attributes.ParentName)) {
           parents.push(student.attributes.ParentName);
-          sendSMS(phoneNumber, student.attributes.ParentName)
+          console.log(`-- ${phoneNumber}${student.attributes.ParentName} --index: ${i} --`);
+          if (i === 1) {
+            throw new Error("Erro");
+          }
+          // sendSMS(phoneNumber, student.attributes.ParentName)
         }
       }
 
@@ -216,7 +220,7 @@ const goThroughUsers = async (page) => {
         pageCount += 1;
         goThroughUsers(pageCount)
       } else {
-        sendEmail(parents)
+        // sendEmail(parents)
         console.log(`-- finish --`);
         console.log(``);
         console.log(``);
@@ -240,6 +244,6 @@ nodeCron.schedule("01 00 18 8 * *", async () => {
 console.log("");
 
 if (debug) {
-  errorContacts = [];
-  goThroughUsers();
 }
+errorContacts = [];
+goThroughUsers();
