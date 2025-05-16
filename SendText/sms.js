@@ -146,13 +146,20 @@ nodeCron.schedule(
 */
 let pageCount = 1;
 
+const sleepTest = async(ms) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, ms);
+  });
+};
+
 /*
 * @param page
 * we need to go through all pages of users, is faster if we receive with pagination.
 * Go through all users on one page and then go to another. 
 */
 const goThroughUsers = async (page) => {
-
   console.log(`-- starting --`);
 
   /*
@@ -162,73 +169,97 @@ const goThroughUsers = async (page) => {
   const students = debug ? debugContacts : metaStudents.data;
 
   /*
-  * Create an index for getting track of wich user we are using
+  * Create an index for getting track of which user we are using
   */
   let i = 0;
-
 
   /*
   * Send a text every 5 seconds so
   * we dont overload the SMS system server
   */
-  const Timer = setInterval(() => {
-    if (students[i]) {
-      const student = students[i];
-
+  const Timer = setInterval(async() => {
+    if (!students[i]) {
       /*
-      * If user has not paid yet, check if their parent already
-      * have received an SMS, and if not, send one.
-      */
-      if (!student.attributes.Paid) {
-        let phoneNumber = student.attributes.ParentContact;
-
-        /*
-        * In case of contact don't have +351, set it all
-        */
-        if (phoneNumber.indexOf("+") === -1) {
-          phoneNumber = "+351" + student.attributes.ParentContact;
-        }
-
-        /*
-        * This parent, already have received one sms?
-        * if so, dont sent another one
-        */
-        if (!parents.find(parentName => parentName === student.attributes.ParentName)) {
-          parents.push(student.attributes.ParentName);
-          console.log(`-- ${phoneNumber}${student.attributes.ParentName} --index: ${i} --`);
-          if (i === 1) {
-            throw new Error("Erro");
-          }
-          // sendSMS(phoneNumber, student.attributes.ParentName)
-        }
-      }
-
-      i++;
-    } else {
-      /*
-      * If there are not more users,
-      * stop this timer, increase the pagination counter and run this function again
-      */
+       * If there are not more users,
+       * stop this timer, increase the pagination counter and run this function again
+       */
       clearInterval(Timer);
       i = 0;
 
       /*
-      * if page count is diferent than the current page,
+      * if page count is different than the current page,
       * run this function again but with pageCount increased
       */
       if (metaStudents.meta.pagination.pageCount !== metaStudents.meta.pagination.page && !debug) {
         pageCount += 1;
-        goThroughUsers(pageCount)
+        goThroughUsers(pageCount);
       } else {
         // sendEmail(parents)
         console.log(`-- finish --`);
         console.log(``);
         console.log(``);
       }
+      return;
+    }
+
+    try {
+      /*
+       * Process current student
+       */
+      const student = students[i];
+
+      /*
+       * If user has not paid yet, check if their parent already
+       * have received an SMS, and if not, send one.
+       */
+      if (!student.attributes.Paid) {
+        let phoneNumber = student.attributes.ParentContact;
+
+        /*
+         * In case of contact doesn't have +351, prefix it
+         */
+        if (phoneNumber.indexOf("+") === -1) {
+          phoneNumber = "+351" + phoneNumber;
+        }
+
+        /*
+         * This parent, already have received one sms?
+         * if so, don't send another one
+         */
+        if (!parents.includes(student.attributes.ParentName)) {
+          parents.push(student.attributes.ParentName);
+          console.log(`-- ${phoneNumber} ${student.attributes.ParentName} -- index: ${i} --`);
+          await sleepTest(5000);
+
+          /*
+           * Test error at iteration 3 (remove or adjust in production)
+           */
+          if (i === 3) {
+            throw new Error("Erro de teste na iteração 3");
+          }
+
+          //sendSMS(phoneNumber, student.attributes.ParentName);
+        }
+      }
+    } catch (err) {
+      /*
+       * On error, log and store contact, but continue processing
+       */
+      const student = students[i] || {};
+      const phone = student.attributes?.ParentContact || "unknown";
+      const name  = student.attributes?.ParentName    || "unknown";
+      errorContacts.push(`${phone}(${name})`);
+      console.error(`Erro ao processar ${phone}(${name}):`, err.message);
+    } finally {
+      /*
+       * Increment index always, even after error
+       */
+      i++;
     }
   }, 5000);
+};
 
-}
+
 
 console.log("🐬 Everyone will be set as Not Paid at day 1st every month.");
 console.log(
