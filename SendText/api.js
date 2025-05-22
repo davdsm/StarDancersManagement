@@ -1,5 +1,6 @@
 import axios from "axios";
 import dotenv from "dotenv";
+import { fileURLToPath } from "url";
 dotenv.config();
 
 const apiToken = process.env.API_TOKEN;
@@ -13,16 +14,25 @@ const headers = {
 
 export const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-const resetJob = async (id) => {
-  return axios
-    .put(
-      `${apiAddress}/api/students/${id}`,
-      {
-        data: { Paid: false },
-      },
-      headers
-    )
-    .then(() => true);
+export const resetJob = async (id) => {
+  try {
+    // erro de teste apenas para id = 123
+    if (id === 123) throw new Error("Erro proposital de teste no resetJob");
+
+    /* return axios
+         .put(
+           `${apiAddress}/api/students/${id}`,
+           { data: { Paid: false } },
+           headers
+         )
+         .then(() => true); */
+
+    console.log("reset", id);
+  } catch (error) {
+    console.error(`Erro ao resetar job para o ID ${id}:`, error.message);
+    // continua sem relançar
+  }
+  return true;
 };
 
 export const getStudents = async (page) => {
@@ -32,11 +42,9 @@ export const getStudents = async (page) => {
       `${apiAddress}/api/students?filters[Paid][$eq]=false${filters}`,
       headers
     )
-    .then((response) => {
-      return response.data;
-    })
+    .then((response) => response.data)
     .catch((response) => {
-      console.log(response)
+      console.log(response);
       return response.response ? response.response.status : 500;
     });
 };
@@ -48,7 +56,7 @@ export const resetJobs = async () => {
       headers
     )
     .then(async (response) => {
-      if(response.data.meta.pagination.pageCount > 1) {
+      if (response.data.meta.pagination.pageCount > 1) {
         await response.data.data.forEach(async (student) => resetJob(student.id));
         resetJobs();
       } else {
@@ -60,3 +68,11 @@ export const resetJobs = async () => {
       return false;
     });
 };
+
+// ————————————————————————————
+const __filename = fileURLToPath(import.meta.url);
+if (process.argv[1] === __filename) {
+  resetJob(123).then(() => {
+    console.log("Teste de resetJob concluído.");
+  });
+}
