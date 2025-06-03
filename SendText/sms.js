@@ -3,16 +3,13 @@ import nodeCron from "node-cron";
 import request from "request";
 import Twilio from "twilio";
 import { getStudents, resetJobs, sleep } from "./api.js";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 
-const debug = false;
+const debug = false; // Set to true for testing with debugContacts
+const dryRun = true; // Set to true para não enviar SMS de fato
 let errorContacts = [];
-
-/*
-* Save the list of parents that received an SMS in order to not duplicate sms receivers
-* and to send Sara the list of parents that received SMS.
-*/
 const parents = [];
 
 const debugContacts = {
@@ -29,9 +26,7 @@ const debugContacts = {
       "Observations": "Nada",
       "ImageRights": true,
       "Paid": false,
-      "Week": [
-        "Segunda"
-      ],
+      "Week": ["Segunda"],
       "createdAt": "2024-04-09T21:19:59.927Z",
       "updatedAt": "2024-04-09T21:19:59.927Z",
       "publishedAt": "2024-04-09T21:19:59.926Z",
@@ -51,16 +46,14 @@ const debugContacts = {
       "Observations": "Nada",
       "ImageRights": true,
       "Paid": false,
-      "Week": [
-        "Segunda"
-      ],
+      "Week": ["Segunda"],
       "createdAt": "2024-04-09T21:19:59.927Z",
       "updatedAt": "2024-04-09T21:19:59.927Z",
       "publishedAt": "2024-04-09T21:19:59.926Z",
       "BornDate": "1989-10-11"
     }
-  },
-}
+  }
+};
 
 async function sendSMS(phoneNumber, parentName) {
   const text = `${debug ? "---ISTO É UM TESTE PARA DAVID E ANA--- " : ''}Caro Encarregado de educação ${parentName},
@@ -73,30 +66,30 @@ async function sendSMS(phoneNumber, parentName) {
   StarDancers.
   
   (Em caso de pagamento por transferência multibanco é obrigatório o comprovativo para assim a situação ficar como regularizada)
-  `
+  `;
 
-  /*
-  * Credentials and on system vars for security reasons
-  */
+  if (dryRun) {
+    console.log(`[DRY RUN] Simulação de SMS para ${phoneNumber} - ${parentName}`);
+    return;
+  }
+
   const accountSid = process.env.SMS_ACCOUNT_ID;
   const authToken = process.env.SMS_AUTH_TOKEN;
-
   const client = new Twilio.Twilio(accountSid, authToken);
 
-  client.messages
-    .create({
-      body: text,
-      messagingServiceSid: 'MG23ac2229bf53017625d9c3d9e095b47c',
-      to: phoneNumber
-    }, function (error, message) {
-      if (error) {
-        errorContacts.push(`${phoneNumber}(${parentName})`)
-        console.log(`There is an error with ${phoneNumber}(${parentName}).`);
-        console.log(`${error}, ${message}`);
-      }
-    })
+  client.messages.create({
+    body: text,
+    messagingServiceSid: 'MG23ac2229bf53017625d9c3d9e095b47c',
+    to: phoneNumber
+  }, function (error, message) {
+    if (error) {
+      errorContacts.push(`${phoneNumber}(${parentName})`);
+      console.log(`There is an error with ${phoneNumber}(${parentName}).`);
+      console.log(`${error}, ${message}`);
+    }
+  });
 
-  console.log(`enviou mensagem para ${phoneNumber} - ${parentName}`)
+  console.log(`enviou mensagem para ${phoneNumber} - ${parentName}`);
 }
 
 function sendEmail(parents) {
@@ -104,13 +97,12 @@ function sendEmail(parents) {
   console.log("⚡ SMS Sent - ", parents.length);
   console.log("⚡ Done for today - ", new Date());
 
-  // send email noticing admin
   request({
     url: "http://api.davdsm.pt:8030/sendMail",
     method: "POST",
     headers: {
       'Content-Type': 'application/json',
-      "davdsmKey": 'd41d8cd98f00b204e9800998ecf8427e'  // <--Very important!!!
+      "davdsmKey": 'd41d8cd98f00b204e9800998ecf8427e'
     },
     body: JSON.stringify({
       sender: "⭐ StarDancers",
@@ -119,162 +111,94 @@ function sendEmail(parents) {
         name: "Admnistradora Ana"
       },
       subject: `✈️ (${parents.length}) SMS Enviados`,
-      message: `<h3>Olá Ana</h3><p>Este mês sairam ${parents.length} mensagens, segue a lista de pais que receberam o aviso de não pagamento:<br/> ${parents.map(parent => `${parent} <br/>`)}</p>Contactos com erro: ${errorContacts.map(contact => `${contact} <br/>`)}<br/><br/><br/>Obrigada.<br/><b>Star Dancers App</b>`
+      message: `<h3>Olá Ana</h3><p>Este mês saíram ${parents.length} mensagens, segue a lista de pais que receberam o aviso de não pagamento:<br/> ${parents.map(parent => `${parent} <br/>`)}</p>Contactos com erro: ${errorContacts.map(contact => `${contact} <br/>`)}<br/><br/><br/>Obrigada.<br/><b>Star Dancers App</b>`
     })
   }, function (error, response, body) {
     console.log("✈️ Email Enviado? - ", response.body);
-    console.log("---------------------------------------------------");
-    console.log("");
+    console.log("---------------------------------------------------\n");
   });
 }
 
-/*
-* In the first day of every month we need to
-* set every user as paid = false;
-*/
 const day1st = "00 01 00 1 * *";
-nodeCron.schedule(
-  day1st, // 1st Every Month at 9am
-  async () => {
-    // await resetJobs();
-    console.log("👪 Everyone Reseted");
-  }
-);
-/*
-* Because stripe has pagination on get all
-* we need to go through all pages
-*/
-let pageCount = 1;
+nodeCron.schedule(day1st, async () => {
+  // await resetJobs();
+  console.log("👪 Everyone Reseted");
+});
 
-const sleepTest = async(ms) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, ms);
-  });
+const sleepTest = async (ms) => {
+  return new Promise(resolve => setTimeout(resolve, ms));
 };
 
-/*
-* @param page
-* we need to go through all pages of users, is faster if we receive with pagination.
-* Go through all users on one page and then go to another. 
-*/
+// melhoria de código teste
+async function processStudent(student, i) {
+  try {
+    if (!student.attributes.Paid) {
+      let phoneNumber = student.attributes.ParentContact;
+
+      if (phoneNumber.indexOf("+") === -1) {
+        phoneNumber = "+351" + phoneNumber;
+      }
+
+      if (!parents.includes(student.attributes.ParentName)) {
+        parents.push(student.attributes.ParentName);
+        console.log(`-- ${phoneNumber} ${student.attributes.ParentName} -- index: ${i} --`);
+        await sleepTest(5000);
+
+        // Apenas para teste - pode ser removido
+        if (i === 1) {
+          throw new Error("Erro de teste na iteração 1");
+        }
+
+        // Descomente para enviar SMS real
+        // await sendSMS(phoneNumber, student.attributes.ParentName);
+      }
+    }
+  } catch (err) {
+    const studentPhone = student.attributes?.ParentContact || "unknown";
+    const studentName = student.attributes?.ParentName || "unknown";
+    errorContacts.push(`${studentPhone}(${studentName})`);
+    console.error(`Erro ao processar ${studentPhone}(${studentName}):`, err.message);
+  }
+}
+
+let pageCount = 1;
+
 const goThroughUsers = async (page) => {
   console.log(`-- starting --`);
-
-  /*
-  * Get Students from Database
-  */
   const metaStudents = await getStudents(page);
   const students = debug ? debugContacts : metaStudents.data;
 
-  /*
-  * Create an index for getting track of which user we are using
-  */
-  let i = 0;
+  // Substituído setInterval por loop assíncrono
+  for (let i = 0; i < students.length; i++) {
+    await processStudent(students[i], i);
+    await sleepTest(5000);
+  }
 
-  /*
-  * Send a text every 5 seconds so
-  * we dont overload the SMS system server
-  */
-  const Timer = setInterval(async() => {
-    if (!students[i]) {
-      /*
-       * If there are not more users,
-       * stop this timer, increase the pagination counter and run this function again
-       */
-      clearInterval(Timer);
-      i = 0;
-
-      /*
-      * if page count is different than the current page,
-      * run this function again but with pageCount increased
-      */
-      if (metaStudents.meta.pagination.pageCount !== metaStudents.meta.pagination.page && !debug) {
-        pageCount += 1;
-        goThroughUsers(pageCount);
-      } else {
-        // sendEmail(parents)
-        console.log(`-- finish --`);
-        console.log(``);
-        console.log(``);
-      }
-      return;
-    }
-
-    try {
-      /*
-       * Process current student
-       */
-      const student = students[i];
-
-      /*
-       * If user has not paid yet, check if their parent already
-       * have received an SMS, and if not, send one.
-       */
-      if (!student.attributes.Paid) {
-        let phoneNumber = student.attributes.ParentContact;
-
-        /*
-         * In case of contact doesn't have +351, prefix it
-         */
-        if (phoneNumber.indexOf("+") === -1) {
-          phoneNumber = "+351" + phoneNumber;
-        }
-
-        /*
-         * This parent, already have received one sms?
-         * if so, don't send another one
-         */
-        if (!parents.includes(student.attributes.ParentName)) {
-          parents.push(student.attributes.ParentName);
-          console.log(`-- ${phoneNumber} ${student.attributes.ParentName} -- index: ${i} --`);
-          await sleepTest(5000);
-
-          /*
-           * Test error at iteration 3 (remove or adjust in production)
-           */
-          if (i === 3) {
-            throw new Error("Erro de teste na iteração 3");
-          }
-
-          //sendSMS(phoneNumber, student.attributes.ParentName);
-        }
-      }
-    } catch (err) {
-      /*
-       * On error, log and store contact, but continue processing
-       */
-      const student = students[i] || {};
-      const phone = student.attributes?.ParentContact || "unknown";
-      const name  = student.attributes?.ParentName    || "unknown";
-      errorContacts.push(`${phone}(${name})`);
-      console.error(`Erro ao processar ${phone}(${name}):`, err.message);
-    } finally {
-      /*
-       * Increment index always, even after error
-       */
-      i++;
-    }
-  }, 5000);
+  // Quando terminar esta página, verifica se há próxima
+  if (!debug && metaStudents.meta.pagination.pageCount !== metaStudents.meta.pagination.page) {
+    pageCount += 1;
+    await goThroughUsers(pageCount);
+  } else {
+    // sendEmail(parents);
+    console.log(`-- finish --\n`);
+  }
 };
 
-
-
 console.log("🐬 Everyone will be set as Not Paid at day 1st every month.");
-console.log(
-  "🐬 Not Paid students will receive a sms text day 8 every month."
-);
-// 01 00 18 8 * * -> Dia 8 de cada mês às 18h00
+console.log("🐬 Not Paid students will receive a sms text day 8 every month.\n");
 
 nodeCron.schedule("01 00 18 8 * *", async () => {
   errorContacts = [];
-  goThroughUsers();
+  parents.length = 0;
+  pageCount = 1;
+  goThroughUsers(1);
 });
 
-console.log("");
-
-if (debug) {
+// Se este arquivo for executado diretamente via `node sms.js`
+const __filename = fileURLToPath(import.meta.url);
+if (process.argv[1] === __filename) {
+  errorContacts = [];
+  parents.length = 0;
+  pageCount = 1;
+  goThroughUsers(1);
 }
-errorContacts = [];
-goThroughUsers();
