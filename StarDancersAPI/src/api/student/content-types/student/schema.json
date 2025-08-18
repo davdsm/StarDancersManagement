@@ -1,0 +1,65 @@
+{
+  "kind": "collectionType",
+  "collectionName": "students",
+  "info": {
+    "singularName": "student",
+    "pluralName": "students",
+    "displayName": "Student",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Name": {
+      "type": "string",
+      "required": true
+    },
+    "ParentName": {
+      "type": "string",
+      "required": true
+    },
+    "ParentContact": {
+      "type": "string"
+    },
+    "ParentEmail": {
+      "type": "email"
+    },
+    "ParentNIF": {
+      "type": "biginteger",
+      "required": false
+    },
+    "Class": {
+      "type": "string",
+      "required": true
+    },
+    "Price": {
+      "type": "float",
+      "required": true
+    },
+    "Observations": {
+      "type": "richtext"
+    },
+    "ImageRights": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "Paid": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "Week": {
+      "type": "json",
+      "required": true
+    },
+    "BornDate": {
+      "type": "date"
+    },
+    "StudentID": {
+      "type": "string"
+    }
+  }
+}

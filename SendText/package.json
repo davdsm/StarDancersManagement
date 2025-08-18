@@ -1,0 +1,13 @@
+{
+  "name": "SendText",
+  "version": "0.0.0",
+  "dependencies": {
+    "twilio": "^5.0.3",
+    "api": "^5.0.4",
+    "axios": "^1.2.1",
+    "dotenv": "^16.0.3",
+    "node-cron": "^3.0.2",
+    "request": "^2.88.2"
+  },
+  "type": "module"
+}
