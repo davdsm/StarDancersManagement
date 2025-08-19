@@ -22,7 +22,7 @@ export default {
             v-if="page > 1"
             @click="(e) => handlePagination(e, page - 1)"
             href=""
-            class="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700"
+            class="block px-3 py-2 ml-0 leading-tight"
           >
             <span class="sr-only">Previous</span>
             <svg
@@ -43,14 +43,14 @@ export default {
         <li v-for="i in pagination.pageCount" :key="i">
           <a
             v-if="page === i"
-            class="px-3 py-2 leading-tight border border-gray-700 bg-gray-700 text-white hover:bg-gray-800"
+            class="px-3 py-2 leading-tight text-black font-bold "
             >{{ i }}</a
           >
           <a
             v-if="page !== i"
             href=""
             @click="(e) => handlePagination(e, i)"
-            class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+            class="px-3 py-2 leading-tight hover:text-gray-400"
             >{{ i }}</a
           >
         </li>
@@ -59,7 +59,7 @@ export default {
             v-if="page !== pagination.pageCount"
             @click="(e) => handlePagination(e, page + 1)"
             href=""
-            class="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700"
+            class="block px-3 py-2 leading-tight text-gray-500"
           >
             <span class="sr-only">Next</span>
             <svg

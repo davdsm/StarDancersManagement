@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useCookies } from "vue3-cookies";
 
 const headers = {
   headers: {
@@ -9,7 +10,7 @@ const headers = {
 let oficialPage = 1;
 let filters = "";
 
-export const doLogin: DoLogin = async (username: String, password: String) => {
+export const doLogin = async (username: String, password: String) => {
   return axios
     .post(`${import.meta.env.VITE_ADDRESS}/api/auth/local`, {
       identifier: username,
@@ -17,30 +18,31 @@ export const doLogin: DoLogin = async (username: String, password: String) => {
     })
     .then((response) => {
       createCookie("user", response.data.user.username);
-      return response.status;
+      createCookie("token", response.data.jwt);
+      return response;
     })
     .catch((response) => {
       return response.response ? response.response.status : 500;
     });
 };
 
-export const createCookie: CreateCookie = async (
-  key: String,
-  value: String
-) => {
-  $cookies.set(key, value);
+export const createCookie = (key: string, value: string) => {
+  const { cookies } = useCookies();
+  cookies.set(key, value);
 };
 
-export const getCookie: GetCookie = async (key: String) => {
-  return $cookies.get(key);
+export const getCookie = (key: string) => {
+  const { cookies } = useCookies();
+  return cookies.get(key);
 };
 
-export const removeCookie: RemoveCookie = async (key: String) => {
-  $cookies.remove(key);
+export const removeCookie = (key: string) => {
+  const { cookies } = useCookies();
+  cookies.remove(key);
   return true;
 };
 
-export const getBirthdays: GetBirthdays = async () => {
+export const getBirthdays = async () => {
   const date = <date>new Date();
   const filters = <string>(
     `${("0" + (date.getMonth() + 1)).slice(-2)}-${("0" + date.getDate()).slice(
@@ -64,7 +66,10 @@ export const getBirthdays: GetBirthdays = async () => {
     });
 };
 
-export const getStudents: GetStudents = async (page: Number, withFilters) => {
+export const getStudents = async (
+  page: Number,
+  withFilters: boolean | Boolean
+) => {
   oficialPage = page;
   if (!withFilters) {
     filters = "";
@@ -85,7 +90,7 @@ export const getStudents: GetStudents = async (page: Number, withFilters) => {
     });
 };
 
-export const searchStudents: SearchStudents = async (word: String) => {
+export const searchStudents = async (word: String) => {
   if (word) {
     filters = `&filters[$or][0][Name][$containsi]=${word}&filters[$or][3][Class][$containsi]=${word}&filters[$or][5][StudentID][$containsi]=${word}`;
     return axios
@@ -104,7 +109,7 @@ export const searchStudents: SearchStudents = async (word: String) => {
   }
 };
 
-export const setStudent: SetStudent = async (
+export const setStudent = async (
   key: String,
   value: any,
   id: Integer,
@@ -132,7 +137,7 @@ export const setStudent: SetStudent = async (
     });
 };
 
-export const removeStudent: RemoveStudent = async (id: Integer) => {
+export const removeStudent = async (id: number) => {
   return axios
     .delete(`${import.meta.env.VITE_ADDRESS}/api/students/${id}`, headers)
     .then(() => {
@@ -143,7 +148,7 @@ export const removeStudent: RemoveStudent = async (id: Integer) => {
     });
 };
 
-export const createStudent: CreateStudent = async (payload: Object) => {
+export const createStudent = async (payload: Object) => {
   const data = payload;
   data.ParentContact = String(data.ParentContact);
   return axios
@@ -164,7 +169,7 @@ export const createStudent: CreateStudent = async (payload: Object) => {
     });
 };
 
-export const updatePassword: UpdatePassword = async (password: String) => {
+export const updatePassword = async (password: String) => {
   return axios
     .put(
       `${import.meta.env.VITE_ADDRESS}/api/users/2`,
@@ -179,4 +184,23 @@ export const updatePassword: UpdatePassword = async (password: String) => {
     .catch((response) => {
       return response.response ? response.response.status : 500;
     });
+};
+
+export const getCurrentUser = async () => {
+  const { cookies } = useCookies();
+  const token = cookies.get("token");
+  if (!token) return null;
+
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_ADDRESS}/api/users/me?populate=role`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching current user:", error);
+    return null;
+  }
 };
