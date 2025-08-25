@@ -1,4 +1,5 @@
 import axios from "axios";
+import qs from "qs";
 
 const headers = {
   headers: {
@@ -137,13 +138,26 @@ export const createStudent = async (payload: any) => {
 };
 
 export const getNotifications = async () => {
+  const query = qs.stringify(
+    {
+      publicationState: "live",
+      sort: ["id:desc"],
+      filters: {
+        Target: {
+          $eq: "Todos",
+        },
+        Active: {
+          $eq: true,
+        },
+      },
+    },
+    { encodeValuesOnly: true }
+  );
+
+  const url = `${import.meta.env.VITE_ADDRESS}/api/notifications?${query}`;
+
   return axios
-    .get(
-      `${
-        import.meta.env.VITE_ADDRESS
-      }/api/notifications?publicationState=live&Target='Todos'&sort=id:desc`,
-      headers
-    )
+    .get(url, headers)
     .then((response) => {
       return response.data.data;
     })

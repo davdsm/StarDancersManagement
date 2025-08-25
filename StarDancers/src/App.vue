@@ -23,7 +23,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div v-if="showHeader" class="w-full overflow-x-hidden">
+  <div v-if="showHeader" class="w-full overflow-none">
     <Header />
     <main class="flex flex-row flex-wrap mx-auto sm:pl-20 sm:pr-20">
       <div

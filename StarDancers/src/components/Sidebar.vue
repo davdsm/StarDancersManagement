@@ -54,7 +54,7 @@ export default {
             <span v-if="open" class="hidden md:block">Alunos</span>
           </router-link>
         </li>
-        <li class="mb-2 hover:bg-gray-100 rounded-lg">
+        <!-- <li class="mb-2 hover:bg-gray-100 rounded-lg">
           <router-link
             to="/"
             class="py-4 flex items-center gap-2"
@@ -77,7 +77,7 @@ export default {
 
             <span v-if="open" class="hidden md:block">Avisos</span>
           </router-link>
-        </li>
+        </li> -->
         <li class="mb-2 hover:bg-gray-100 rounded-lg">
           <router-link
             to="/families"

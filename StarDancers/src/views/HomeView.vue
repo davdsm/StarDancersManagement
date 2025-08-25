@@ -157,7 +157,7 @@ export default {
             <button
               @click="createLocal"
               type="button"
-              class="flex items-center justify-left text-white transition w-full rounded yellow px-6 py-3 cursor-pointer font-medium text-sm px-5 py-2.5 mr-2 mb-2 shrink-0"
+              class="flex items-center justify-center text-white transition w-full rounded yellow cursor-pointer font-medium text-sm px-4 py-2.5 mr-2 mb-2 shrink-0 gap-2"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -165,7 +165,7 @@ export default {
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
                 stroke="currentColor"
-                class="w-6 h-6 mr-5"
+                class="w-6 h-6 shrink-0"
               >
                 <path
                   stroke-linecap="round"

@@ -99,7 +99,7 @@ export default {
           <div class="max-sm:w-full">
             <button
               type="button"
-              class="flex items-center justify-left text-white transition w-full rounded bg-teal-600 px-6 py-3 cursor-pointer font-medium text-sm px-5 py-2.5 mr-2 mb-2"
+              class="flex items-center justify-center gap-2 text-white transition w-full rounded bg-teal-600 px-6 py-2.5 cursor-pointer font-medium text-sm mr-2 mb-2"
               :onclick="() => (showModal = true)"
             >
               <svg
@@ -108,7 +108,7 @@ export default {
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
                 stroke="currentColor"
-                class="w-6 h-6 mr-5 shrink-0"
+                class="w-6 h-6 shrink-0"
               >
                 <path
                   stroke-linecap="round"

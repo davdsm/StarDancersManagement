@@ -15,7 +15,7 @@ export default {
 </script>
 
 <template class="bg-slate-100">
-  <div class="pt-10 md:pr-16 md:pl-16 overflow-x-auto relative sm:rounded-lg">
+  <div class="pt-10 md:px-4 overflow-x-auto relative sm:rounded-lg">
     <table class="w-full text-sm text-left text-gray-500">
       <thead class="text-xs text-gray-700 uppercase bg-gray-50">
         <tr>
