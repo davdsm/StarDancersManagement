@@ -178,7 +178,7 @@ export default {
             </button>
           </div>
           <div class="max-sm:w-full">
-            <form class="flex items-center" @submit="(e) => search(e)">
+            <form class="flex items-center" @submit="(e:any) => search(e)">
               <label for="simple-search" class="sr-only">Pesquisa</label>
               <div class="relative w-full">
                 <div

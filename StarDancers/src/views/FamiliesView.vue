@@ -154,7 +154,7 @@ export default {
                 type="reset"
                 class="ml-3"
                 v-if="searchTerm"
-                @click="(e) => search(e, true)"
+                @click="(e:any) => search(e, true)"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

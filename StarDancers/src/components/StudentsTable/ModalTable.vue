@@ -69,7 +69,7 @@ export default {
       <!-- Modal content -->
       <form
         action="#"
-        @submit="(e) => submit(e)"
+        @submit="(e: any) => submit(e)"
         class="relative bg-white rounded-lg shadow"
       >
         <!-- Modal header -->

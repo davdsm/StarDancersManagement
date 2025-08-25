@@ -266,7 +266,7 @@ export default {
       <!-- Modal content -->
       <form
         action="#"
-        @submit="(e) => create(e)"
+        @submit="(e:any) => create(e)"
         class="relative bg-white rounded-lg shadow"
       >
         <!-- Modal header -->

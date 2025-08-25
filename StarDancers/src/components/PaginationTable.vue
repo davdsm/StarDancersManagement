@@ -20,7 +20,7 @@ export default {
         <li>
           <a
             v-if="page > 1"
-            @click="(e) => handlePagination(e, page - 1)"
+            @click="(e: any) => handlePagination(e, page - 1)"
             href=""
             class="block px-3 py-2 ml-0 leading-tight"
           >
@@ -43,13 +43,13 @@ export default {
         <li v-for="i in pagination.pageCount" :key="i">
           <a
             v-if="page === i"
-            class="px-3 py-2 leading-tight text-black font-bold "
+            class="px-3 py-2 leading-tight text-black font-bold"
             >{{ i }}</a
           >
           <a
             v-if="page !== i"
             href=""
-            @click="(e) => handlePagination(e, i)"
+            @click="(e:any) => handlePagination(e, i)"
             class="px-3 py-2 leading-tight hover:text-gray-400"
             >{{ i }}</a
           >
@@ -57,7 +57,7 @@ export default {
         <li>
           <a
             v-if="page !== pagination.pageCount"
-            @click="(e) => handlePagination(e, page + 1)"
+            @click="(e:any) => handlePagination(e, page + 1)"
             href=""
             class="block px-3 py-2 leading-tight text-gray-500"
           >
