@@ -18,18 +18,12 @@ services:
     build:
       context: ./StarDancers
       dockerfile: Dockerfile
-    # ports:
-    #   - "8080:8080"
     container_name: StarApp
-    command: npm run dev -- --port 8080 --host
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-    volumes:
-      - ./StarDancers:/usr/src/app/StarDancers
-      - /usr/src/app/StarDancers/node_modules
     restart: always
     networks:
       - proxy
+    ports:
+      - "8080:8080" # App listens on 8080 inside and outside container
 
   starapi:
     build:
