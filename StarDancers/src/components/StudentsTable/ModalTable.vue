@@ -1,4 +1,5 @@
 <script lang="ts" type="text/x-template" id="table-modal">
+import { getFamilyByStudentId } from "@/services/families";
 import DeletePoup from "./DeletePoup.vue";
 import ErrorModal from "./ErrorModal.vue";
 
@@ -20,6 +21,11 @@ export default {
       ],
       that: this,
       errorMsg: this.error,
+      family: {
+        attributes: {
+          Name: "",
+        },
+      },
     };
   },
   methods: {
@@ -40,6 +46,12 @@ export default {
     },
   },
   components: { DeletePoup, ErrorModal },
+  async mounted() {
+    if (this.student) {
+      this.family = await getFamilyByStudentId(this.student.id);
+      console.log(this.family);
+    }
+  },
 };
 </script>
 
@@ -61,13 +73,21 @@ export default {
         class="relative bg-white rounded-lg shadow"
       >
         <!-- Modal header -->
-        <div class="flex justify-between items-start p-4 rounded-t border-b">
+        <div
+          class="flex justify-between items-center p-4 rounded-t border-b gap-4"
+        >
           <h3 class="text-xl font-semibold text-gray-900">
             Editar {{ local_student.attributes.Name }}
           </h3>
+          <span
+            v-if="family.attributes.Name !== ''"
+            class="ml-auto px-4 py-2 font-bold bg-teal-200 rounded text-xs text-teal-800"
+          >
+            Família {{ family.attributes.Name }}
+          </span>
           <button
             type="button"
-            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex items-center"
             @click="() => close()"
           >
             <svg
@@ -103,7 +123,7 @@ export default {
                 required
               />
             </div>
-<div class="col-span-6 sm:col-span-3">
+            <div class="col-span-6 sm:col-span-3">
               <label
                 for="student-id"
                 class="block mb-2 text-sm font-medium text-gray-900"
@@ -206,7 +226,7 @@ export default {
                 >Turma</label
               >
               <input
-                type="texxt"
+                type="text"
                 name="class"
                 id="class"
                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"

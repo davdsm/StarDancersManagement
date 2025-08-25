@@ -5,7 +5,7 @@ export default {
 </script>
 
 <template>
-  <div class="flex flex-col items-center">
+  <div class="flex flex-col items-center max-w-full">
     <!-- Help text -->
     <span class="mt-10 text-sm text-gray-700 mb-4">
       A mostrar

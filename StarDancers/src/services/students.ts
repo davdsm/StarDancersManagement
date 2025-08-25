@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useCookies } from "vue3-cookies";
 
 const headers = {
   headers: {
@@ -10,40 +9,8 @@ const headers = {
 let oficialPage = 1;
 let filters = "";
 
-export const doLogin = async (username: String, password: String) => {
-  return axios
-    .post(`${import.meta.env.VITE_ADDRESS}/api/auth/local`, {
-      identifier: username,
-      password: password,
-    })
-    .then((response) => {
-      createCookie("user", response.data.user.username);
-      createCookie("token", response.data.jwt);
-      return response;
-    })
-    .catch((response) => {
-      return response.response ? response.response.status : 500;
-    });
-};
-
-export const createCookie = (key: string, value: string) => {
-  const { cookies } = useCookies();
-  cookies.set(key, value);
-};
-
-export const getCookie = (key: string) => {
-  const { cookies } = useCookies();
-  return cookies.get(key);
-};
-
-export const removeCookie = (key: string) => {
-  const { cookies } = useCookies();
-  cookies.remove(key);
-  return true;
-};
-
 export const getBirthdays = async () => {
-  const date = <date>new Date();
+  const date = <Date>new Date();
   const filters = <string>(
     `${("0" + (date.getMonth() + 1)).slice(-2)}-${("0" + date.getDate()).slice(
       -2
@@ -70,7 +37,7 @@ export const getStudents = async (
   page: Number,
   withFilters: boolean | Boolean
 ) => {
-  oficialPage = page;
+  oficialPage = page as number;
   if (!withFilters) {
     filters = "";
   }
@@ -112,7 +79,7 @@ export const searchStudents = async (word: String) => {
 export const setStudent = async (
   key: String,
   value: any,
-  id: Integer,
+  id: Number,
   search: Boolean
 ) => {
   let payload = value;
@@ -148,7 +115,7 @@ export const removeStudent = async (id: number) => {
     });
 };
 
-export const createStudent = async (payload: Object) => {
+export const createStudent = async (payload: any) => {
   const data = payload;
   data.ParentContact = String(data.ParentContact);
   return axios
@@ -169,38 +136,18 @@ export const createStudent = async (payload: Object) => {
     });
 };
 
-export const updatePassword = async (password: String) => {
+export const getNotifications = async () => {
   return axios
-    .put(
-      `${import.meta.env.VITE_ADDRESS}/api/users/2`,
-      {
-        password: password,
-      },
+    .get(
+      `${
+        import.meta.env.VITE_ADDRESS
+      }/api/notifications?publicationState=live&Target='Todos'&sort=id:desc`,
       headers
     )
-    .then(() => {
-      return true;
+    .then((response) => {
+      return response.data.data;
     })
     .catch((response) => {
       return response.response ? response.response.status : 500;
     });
-};
-
-export const getCurrentUser = async () => {
-  const { cookies } = useCookies();
-  const token = cookies.get("token");
-  if (!token) return null;
-
-  try {
-    const response = await axios.get(
-      `${import.meta.env.VITE_ADDRESS}/api/users/me?populate=role`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching current user:", error);
-    return null;
-  }
 };

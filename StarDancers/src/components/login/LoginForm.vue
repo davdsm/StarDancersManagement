@@ -1,5 +1,5 @@
 <script lang="ts">
-import { doLogin, getCookie } from "@/services/api";
+import { doLogin, getCookie } from "@/services/auth";
 
 export default {
   data() {
