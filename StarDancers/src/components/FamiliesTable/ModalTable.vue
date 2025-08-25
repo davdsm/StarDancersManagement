@@ -61,6 +61,11 @@ export default {
         return;
       }
 
+      if (this.password.length <= 6) {
+        this.errorMsg = "As password precisam de conter no mínimo 6 digitos.";
+        return;
+      }
+
       if (this.local_family.id === 0) {
         success = await createFamily(
           this.name,

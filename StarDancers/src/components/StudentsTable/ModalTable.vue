@@ -48,8 +48,8 @@ export default {
   components: { DeletePoup, ErrorModal },
   async mounted() {
     if (this.student) {
-      this.family = await getFamilyByStudentId(this.student.id);
-      console.log(this.family);
+      const fam = await getFamilyByStudentId(this.student.id);
+      if (fam) this.family = fam;
     }
   },
 };
@@ -80,7 +80,7 @@ export default {
             Editar {{ local_student.attributes.Name }}
           </h3>
           <span
-            v-if="family.attributes.Name !== ''"
+            v-if="family && family.attributes.Name !== ''"
             class="ml-auto px-4 py-2 font-bold bg-teal-200 rounded text-xs text-teal-800"
           >
             Família {{ family.attributes.Name }}
