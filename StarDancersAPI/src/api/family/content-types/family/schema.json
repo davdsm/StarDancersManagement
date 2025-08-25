@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "families",
+  "info": {
+    "singularName": "family",
+    "pluralName": "families",
+    "displayName": "Families"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Name": {
+      "type": "string"
+    },
+    "Email": {
+      "type": "email"
+    },
+    "Password": {
+      "type": "password"
+    },
+    "Students": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::student.student"
+    },
+    "notification": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::notification.notification",
+      "inversedBy": "Families"
+    }
+  }
+}

@@ -1,9 +1,9 @@
 'use strict';
 
 /**
- * aquitex service
+ * family service
  */
 
 const { createCoreService } = require('@strapi/strapi').factories;
 
-module.exports = createCoreService('api::aquitex.aquitex');
+module.exports = createCoreService('api::family.family');

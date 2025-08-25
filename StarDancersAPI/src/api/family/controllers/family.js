@@ -1,9 +1,9 @@
 'use strict';
 
 /**
- * aquitex controller
+ * family controller
  */
 
 const { createCoreController } = require('@strapi/strapi').factories;
 
-module.exports = createCoreController('api::aquitex.aquitex');
+module.exports = createCoreController('api::family.family');

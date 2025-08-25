@@ -1,0 +1,51 @@
+{
+  "kind": "collectionType",
+  "collectionName": "notifications",
+  "info": {
+    "singularName": "notification",
+    "pluralName": "notifications",
+    "displayName": "Notifications",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Type": {
+      "type": "enumeration",
+      "enum": [
+        "Aviso",
+        "Erro",
+        "Sucesso",
+        "Informação"
+      ]
+    },
+    "Title": {
+      "type": "string"
+    },
+    "Message": {
+      "type": "text"
+    },
+    "Target": {
+      "type": "enumeration",
+      "enum": [
+        "Todos",
+        "Turma",
+        "Família"
+      ]
+    },
+    "Active": {
+      "type": "boolean"
+    },
+    "Families": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::family.family",
+      "mappedBy": "notification"
+    },
+    "Turma": {
+      "type": "string"
+    }
+  }
+}
