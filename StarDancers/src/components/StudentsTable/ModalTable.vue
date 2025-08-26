@@ -2,6 +2,7 @@
 import { getFamilyByStudentId } from "@/services/families";
 import DeletePoup from "./DeletePoup.vue";
 import ErrorModal from "./ErrorModal.vue";
+import { useUserStore } from "@/stores/user";
 
 export default {
   props: ["close", "student", "update", "delete", "create", "error"],
@@ -21,6 +22,7 @@ export default {
       ],
       that: this,
       errorMsg: this.error,
+      isAdmin: false,
       family: {
         attributes: {
           Name: "",
@@ -47,9 +49,13 @@ export default {
   },
   components: { DeletePoup, ErrorModal },
   async mounted() {
+    const user = useUserStore();
+
     if (this.student) {
       const fam = await getFamilyByStudentId(this.student.id);
       if (fam) this.family = fam;
+
+      this.isAdmin = user.isAdmin;
     }
   },
 };
@@ -76,8 +82,11 @@ export default {
         <div
           class="flex justify-between items-center p-4 rounded-t border-b gap-4"
         >
-          <h3 class="text-xl font-semibold text-gray-900">
+          <h3 class="text-xl font-semibold text-gray-900" v-if="isAdmin">
             Editar {{ local_student.attributes.Name }}
+          </h3>
+          <h3 class="text-xl font-semibold text-gray-900" v-if="!isAdmin">
+            Ver {{ local_student.attributes.Name }}
           </h3>
           <span
             v-if="family && family.attributes.Name !== ''"
@@ -120,6 +129,7 @@ export default {
                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
                 :placeholder="local_student.attributes.Name"
                 v-model="local_student.attributes.Name"
+                :disabled="!isAdmin"
                 required
               />
             </div>
@@ -136,6 +146,7 @@ export default {
                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
                 :placeholder="local_student.attributes.StudentID"
                 v-model="local_student.attributes.StudentID"
+                :disabled="!isAdmin"
                 required
               />
             </div>
@@ -152,6 +163,7 @@ export default {
                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
                 :placeholder="local_student.attributes.BornDate"
                 v-model="local_student.attributes.BornDate"
+                :disabled="!isAdmin"
                 required
               />
             </div>
@@ -168,6 +180,7 @@ export default {
                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
                 :placeholder="local_student.attributes.ParentName"
                 v-model="local_student.attributes.ParentName"
+                :disabled="!isAdmin"
                 required
               />
             </div>
@@ -184,6 +197,7 @@ export default {
                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
                 :placeholder="local_student.attributes.ParentEmail"
                 v-model="local_student.attributes.ParentEmail"
+                :disabled="!isAdmin"
                 required
               />
             </div>
@@ -200,6 +214,7 @@ export default {
                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
                 :placeholder="local_student.attributes.ParentContact"
                 v-model="local_student.attributes.ParentContact"
+                :disabled="!isAdmin"
                 required
               />
             </div>
@@ -216,6 +231,7 @@ export default {
                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
                 :placeholder="local_student.attributes.ParentNIF"
                 v-model="local_student.attributes.ParentNIF"
+                :disabled="!isAdmin"
                 required
               />
             </div>
@@ -232,6 +248,7 @@ export default {
                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
                 :placeholder="local_student.attributes.Class"
                 v-model="local_student.attributes.Class"
+                :disabled="!isAdmin"
                 required
               />
             </div>
@@ -248,6 +265,7 @@ export default {
                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
                 :placeholder="local_student.attributes.Price"
                 v-model="local_student.attributes.Price"
+                :disabled="!isAdmin"
                 required
               />
             </div>
@@ -263,6 +281,7 @@ export default {
                 class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                 :placeholder="local_student.attributes.Observations"
                 v-model="local_student.attributes.Observations"
+                :disabled="!isAdmin"
               ></textarea>
             </div>
           </div>
@@ -270,7 +289,7 @@ export default {
             <label class="block mb-2 text-sm font-medium text-gray-900"
               >Semana</label
             >
-            <div class="flex">
+            <div class="flex" :class="!isAdmin && 'pointer-events-none'">
               <div class="mr-1" v-for="day in week" :key="day">
                 <label
                   :for="day"
@@ -291,6 +310,7 @@ export default {
                   class="hidden"
                   :value="day"
                   v-model="local_student.attributes.Week"
+                  :disabled="!isAdmin"
                 />
               </div>
             </div>
@@ -306,6 +326,7 @@ export default {
                   v-model="local_student.attributes.ImageRights"
                   name="bordered-checkbox"
                   class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500"
+                  :disabled="!isAdmin"
                 />
                 <label
                   for="bordered-checkbox-1"
@@ -324,6 +345,7 @@ export default {
                   v-model="local_student.attributes.Paid"
                   name="bordered-checkbox"
                   class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500"
+                  :disabled="!isAdmin"
                 />
                 <label
                   for="bordered-checkbox-2"
@@ -359,6 +381,7 @@ export default {
         </div>
         <!-- Modal footer -->
         <div
+          v-if="isAdmin"
           class="flex items-center justify-between p-6 space-x-2 rounded-b border-t border-gray-200"
         >
           <button

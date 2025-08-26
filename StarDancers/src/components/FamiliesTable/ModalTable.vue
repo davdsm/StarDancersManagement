@@ -4,7 +4,8 @@ import { createFamily, deleteFamily, updateFamily } from "@/services/families";
 import ErrorModal from "./ErrorModal.vue";
 import DeletePoup from "../StudentsTable/DeletePoup.vue";
 import { getStudents, searchStudents } from "@/services/students";
-type Student = {
+
+export type Student = {
   id: number;
   attributes: {
     Name: string;
@@ -61,11 +62,6 @@ export default {
         return;
       }
 
-      if (this.password.length <= 6) {
-        this.errorMsg = "As password precisam de conter no mínimo 6 digitos.";
-        return;
-      }
-
       if (this.local_family.id === 0) {
         success = await createFamily(
           this.name,
@@ -75,6 +71,11 @@ export default {
         );
         this.close();
       } else {
+        if (this.password.length > 0 && this.password.length <= 6) {
+          this.errorMsg = "As password precisam de conter no mínimo 6 digitos.";
+          return;
+        }
+
         success = await updateFamily(
           this.family.id,
           this.name,

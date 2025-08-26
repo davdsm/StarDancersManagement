@@ -28,14 +28,16 @@ export default {
   },
   methods: {
     async pay(id: any, status: Boolean) {
-      this.loading = id;
-      [this.students, this.pagination] = await setStudent(
-        "Paid",
-        status,
-        id,
-        this.query.length > 0
-      );
-      this.loading = false;
+      if (this.isAdmin) {
+        this.loading = id;
+        [this.students, this.pagination] = await setStudent(
+          "Paid",
+          status,
+          id,
+          this.query.length > 0
+        );
+        this.loading = false;
+      }
     },
     async update(id: any, payload: Object) {
       const data = Object.assign({}, payload);
@@ -138,6 +140,7 @@ export default {
   >
     <div
       class="entry flex flex-col bg-white pt-12 pb-12 shadow-davdsm rounded-lg delay"
+      :class="!isAdmin && 'mb-20'"
     >
       <div class="w-full md:grid md:grid-cols-3 gap-3 px-16">
         <div class="md:col-span-2">
@@ -146,12 +149,19 @@ export default {
               Alunos
             </h3>
             <p class="text-md pt-2 font-medium subtitle max-sm:text-center">
-              Um total de {{ pagination.total }} alunos. 😜
+              Um total de
+              {{
+                pagination?.hasOwnProperty("total")
+                  ? pagination.total
+                  : students.length
+              }}
+              alunos. 😜
             </p>
           </header>
         </div>
         <div
           class="md:flex max-sm:pt-10 max-sm:pb-10 justify-end max-sm:justify-start md:grid md:grid-cols-2 gap-2"
+          v-if="isAdmin"
         >
           <div class="max-sm:w-full">
             <button
@@ -242,6 +252,7 @@ export default {
       />
     </div>
     <PaginationTable
+      v-if="isAdmin"
       :page="page"
       :pagination="pagination"
       :handlePagination="handlePagination"

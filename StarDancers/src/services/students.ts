@@ -1,3 +1,4 @@
+import { useUserStore } from "@/stores/user";
 import axios from "axios";
 import qs from "qs";
 
@@ -38,27 +39,34 @@ export const getStudents = async (
   page: Number,
   withFilters: boolean | Boolean
 ) => {
-  oficialPage = page as number;
-  if (!withFilters) {
-    filters = "";
-  }
+  const user = useUserStore();
+  await user.fetchUser();
 
-  return axios
-    .get(
-      `${
-        import.meta.env.VITE_ADDRESS
-      }/api/students?publicationState=live&pagination[page]=${page}&sort=id:desc${filters}`,
-      headers
-    )
-    .then((response) => {
-      return [response.data.data, response.data.meta.pagination];
-    })
-    .catch((response) => {
-      return response.response ? response.response.status : 500;
-    });
+  if (user.isAdmin) {
+    oficialPage = page as number;
+    if (!withFilters) {
+      filters = "";
+    }
+
+    return axios
+      .get(
+        `${
+          import.meta.env.VITE_ADDRESS
+        }/api/students?publicationState=live&pagination[page]=${page}&sort=id:desc${filters}`,
+        headers
+      )
+      .then((response) => {
+        return [response.data.data, response.data.meta.pagination];
+      })
+      .catch((response) => {
+        return response.response ? response.response.status : 500;
+      });
+  } else {
+    return [await user.getStudents(), {}];
+  }
 };
 
-export const searchStudents = async (word: String) => {
+export const searchStudents = async (word: string) => {
   if (word) {
     filters = `&filters[$or][0][Name][$containsi]=${word}&filters[$or][3][Class][$containsi]=${word}&filters[$or][5][StudentID][$containsi]=${word}`;
     return axios

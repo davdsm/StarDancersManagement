@@ -4,6 +4,9 @@ import DropdownMenu from "./DropdownMenu.vue";
 import Notification from "./Notification.vue";
 import { getBirthdays, getNotifications } from "@/services/students";
 import { getCookie, removeCookie, updatePassword } from "@/services/auth";
+import { useUserStore } from "@/stores/user";
+import { getFamilies } from "@/services/families";
+import { onMounted } from "vue";
 
 export default {
   data() {
@@ -13,6 +16,7 @@ export default {
       username: "",
       menu: false as boolean,
       notifications: [] as Array<any>,
+      isAdmin: false,
     };
   },
   components: {
@@ -22,12 +26,19 @@ export default {
   },
   async beforeMount() {
     // check login
-    const user = await getCookie("user");
-    if (!user) {
+    const storedUser = await getCookie("user");
+    if (!storedUser) {
       this.$router.push("/login");
       return;
     }
-    this.username = user;
+
+    const user = useUserStore();
+    const family = await user.getFamily();
+    this.isAdmin = user.isAdmin;
+
+    this.username = user.isAdmin
+      ? storedUser
+      : `Família ${family?.attributes.Name}`;
 
     // birthdays
     this.birtdays = await getBirthdays();
@@ -41,7 +52,10 @@ export default {
       this.password = false;
     },
     async logout() {
-      await removeCookie("user");
+      removeCookie("user");
+      setTimeout(() => {
+        window.location.reload();
+      }, 0);
       this.$router.push("/login");
     },
   },
@@ -65,6 +79,7 @@ export default {
 
       <!-- Birthdays -->
       <div
+        v-if="isAdmin"
         id="tooltip"
         class="w-30 mr-12 max-sm:absolute max-sm:w-full max-sm:text-center max-sm:top-80"
       >
