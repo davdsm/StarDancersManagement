@@ -75,7 +75,7 @@ export default {
       <!-- Modal content -->
       <form
         action="#"
-        @submit="(e: any) => submit(e)"
+        @submit="(e: any) => isAdmin ? submit(e) : null"
         class="relative bg-white rounded-lg shadow"
       >
         <!-- Modal header -->

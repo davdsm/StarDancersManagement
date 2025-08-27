@@ -86,14 +86,16 @@ export const searchStudents = async (word: string) => {
 };
 
 export const setStudent = async (
-  key: String,
+  key: string,
   value: any,
-  id: Number,
-  search: Boolean
+  id: number,
+  search: boolean,
+  paymentMethod?: string
 ) => {
   let payload = value;
   if (key === "Paid") {
     payload = { Paid: value };
+    Object.assign(payload, { PaymentMethod: value ? paymentMethod : null });
   }
   return axios
     .put(

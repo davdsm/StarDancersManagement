@@ -1,3 +1,4 @@
+import { useUserStore } from "@/stores/user";
 import axios from "axios";
 import { useCookies } from "vue3-cookies";
 
@@ -16,6 +17,8 @@ export const doLogin = async (username: String, password: String) => {
     .then((response) => {
       createCookie("user", response.data.user.username);
       createCookie("token", response.data.jwt);
+      const user = useUserStore();
+      user.fetchUser();
       return response;
     })
     .catch((response) => {

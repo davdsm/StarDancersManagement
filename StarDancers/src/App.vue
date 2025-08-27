@@ -1,24 +1,17 @@
 <script setup lang="ts">
-import { useRoute } from "vue-router";
-import { computed, ref, onMounted } from "vue";
+import { computed, onMounted } from "vue";
 import Header from "./components/Header.vue";
 import Sidebar from "./components/Sidebar.vue";
 import { useUserStore } from "@/stores/user"; // Adjust the path if needed
 
-// Get current route
-const route = useRoute();
-
-// Determine if the header should be shown
-const showHeader = computed(() => route.name !== "login");
-
-// Admin state
-const isAdmin = ref(false);
-
 const userStore = useUserStore();
+
+// reactive values derived from the store
+const isAdmin = computed(() => userStore.isAdmin);
+const showHeader = computed(() => !!userStore.user);
 
 onMounted(async () => {
   await userStore.fetchUser();
-  isAdmin.value = userStore.isAdmin;
 });
 </script>
 
@@ -35,6 +28,6 @@ onMounted(async () => {
     </main>
   </div>
   <div v-else>
-     <RouterView />
+    <RouterView />
   </div>
 </template>

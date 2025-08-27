@@ -53,6 +53,10 @@ export default {
     },
     async logout() {
       removeCookie("user");
+      removeCookie("token");
+      localStorage.removeItem("token");
+      const userStore = useUserStore();
+      userStore.$reset();
       setTimeout(() => {
         window.location.reload();
       }, 0);

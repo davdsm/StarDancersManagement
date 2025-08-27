@@ -27,14 +27,15 @@ export default {
     };
   },
   methods: {
-    async pay(id: any, status: Boolean) {
+    async pay(id: any, status: boolean, method?: string) {
       if (this.isAdmin) {
         this.loading = id;
         [this.students, this.pagination] = await setStudent(
           "Paid",
           status,
           id,
-          this.query.length > 0
+          this.query.length > 0,
+          method
         );
         this.loading = false;
       }
@@ -46,7 +47,8 @@ export default {
         "Profile",
         data,
         id,
-        false
+        false,
+        ""
       );
       this.loading = false;
       if (success) {
@@ -127,6 +129,7 @@ export default {
   },
 
   async mounted() {
+    this.isAdmin = false;
     const userStore = useUserStore();
     await userStore.fetchUser();
     this.isAdmin = userStore.isAdmin;

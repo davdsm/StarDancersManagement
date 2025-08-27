@@ -7,11 +7,26 @@ export default {
     return {
       local_students: JSON.parse(JSON.stringify(this.students)),
       isAdmin: false,
+      activePaymentSelector: <null | number>null,
     };
   },
   watch: {
     students() {
       this.local_students = JSON.parse(JSON.stringify(this.students));
+    },
+  },
+  methods: {
+    togglePaymentSelector(itemId: number) {
+      this.pay(itemId, true);
+      this.activePaymentSelector =
+        this.activePaymentSelector === itemId ? null : itemId;
+    },
+    selectPaymentMethod(itemId: number, method: string) {
+      this.pay(itemId, true, method);
+      this.cancelPaymentSelection();
+    },
+    cancelPaymentSelection() {
+      this.activePaymentSelector = null;
     },
   },
   mounted() {
@@ -37,15 +52,15 @@ export default {
         <tr
           v-for="item in local_students"
           :key="item.id"
-          class="bg-white border-b hover:bg-gray-50"
+          class="bg-white border-b hover:bg-gray-50 relative"
         >
-          <th
+          <td
             scope="row"
             class="py-4 px-6 font-medium title whitespace-nowrap cursor-pointer"
             @click="() => show(item)"
           >
             {{ item.attributes.Name }}
-          </th>
+          </td>
           <td class="py-4 px-6 py-4 px-6 font-medium title whitespace-nowrap">
             <div class="flex flex-col">
               {{ item.attributes.ParentName }}
@@ -63,21 +78,23 @@ export default {
           <td class="py-4 px-6">
             {{ item.attributes.Class }}
           </td>
-          <td class="py-4 px-6 flex justify-start">
+          <td
+            class="py-4 px-6 flex justify-start items-center static"
+            :class="[
+              activePaymentSelector === item.id
+                ? `before:content-[''] before:absolute before:left-0 before:w-full before:h-full before:bg-black/20 before:top-0`
+                : '',
+              isAdmin
+                ? 'cursor-pointer'
+                : 'pointer-events-none cursor-not-allowed',
+            ]"
+          >
             <span
               v-if="loading !== item.id && item.attributes.Paid"
-              @click="pay(item.id, !item.attributes.Paid)"
-              class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900"
-              :class="isAdmin ? 'cursor-pointer' : 'cursor-not-allowed'"
-              >Pago</span
-            >
-            <span
-              v-if="loading !== item.id && !item.attributes.Paid"
-              @click="pay(item.id, !item.attributes.Paid)"
-              class="cursor-pointer bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-red-200 dark:text-red-900"
-              :class="isAdmin ? 'cursor-pointer' : 'cursor-not-allowed'"
-              >Não Pago</span
-            >
+              @click="pay(item.id, !item.attributes.Paid) && cancelPaymentSelection()"
+              class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900 shrink-0"
+              >Pago
+            </span>
             <span v-if="loading === item.id">
               <svg
                 class="inline mr-2 w-4 h-4 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
@@ -95,6 +112,131 @@ export default {
                 />
               </svg>
             </span>
+            <span
+              v-if="loading !== item.id && !item.attributes.Paid"
+              @click="togglePaymentSelector(item.id)"
+              class="bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-red-200 dark:text-red-900"
+              :class="isAdmin ? 'cursor-pointer' : 'cursor-not-allowed'"
+              >Não Pago</span
+            >
+            <img
+              v-if="item.attributes.PaymentMethod === 'MBWay'"
+              src="../../assets/paymentMethods/mbway.png"
+              class="w-4 h-8 object-contain aspect-square"
+            />
+            <img
+              v-if="item.attributes.PaymentMethod === 'Multibanco'"
+              src="../../assets/paymentMethods/multibanco.png"
+              class="w-4 h-8 object-contain aspect-square"
+            />
+            <svg
+              v-if="item.attributes.PaymentMethod === 'Money'"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-4"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"
+              />
+            </svg>
+            <svg
+              v-if="item.attributes.PaymentMethod === 'Transfer'"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-4"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z"
+              />
+            </svg>
+
+            <ul
+              class="absolute flex flex-row flex-no-wrap gap-4 items-center left-1/2 -translate-x-1/2 p-4 bg-white rounded top-2 justify-center"
+              v-if="activePaymentSelector === item.id && isAdmin"
+            >
+              <li class="shrink-0">
+                <button @click="selectPaymentMethod(item.id, 'MBWay')">
+                  <img
+                    src="../../assets/paymentMethods/mbway.png"
+                    class="shrink-0 w-6 h-6 aspect-square object-contain"
+                  />
+                </button>
+              </li>
+              <li class="shrink-0">
+                <button @click="selectPaymentMethod(item.id, 'Multibanco')">
+                  <img
+                    src="../../assets/paymentMethods/multibanco.png"
+                    class="shrink-0 w-6 h-6 aspect-square object-contain"
+                  />
+                </button>
+              </li>
+              <li class="shrink-0">
+                <button @click="selectPaymentMethod(item.id, 'Money')">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"
+                    />
+                  </svg>
+                </button>
+              </li>
+
+              <li class="shrink-0">
+                <button @click="selectPaymentMethod(item.id, 'Transfer')">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z"
+                    />
+                  </svg>
+                </button>
+              </li>
+
+              <li class="shrink-0">
+                <button @click="cancelPaymentSelection">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M6 18 18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </li>
+            </ul>
           </td>
         </tr>
       </tbody>
