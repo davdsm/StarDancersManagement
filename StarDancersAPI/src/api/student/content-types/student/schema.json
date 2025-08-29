@@ -60,6 +60,15 @@
     },
     "StudentID": {
       "type": "string"
+    },
+    "PaymentMethod": {
+      "type": "enumeration",
+      "enum": [
+        "MBWay",
+        "Multibanco",
+        "Transfer",
+        "Money"
+      ]
     }
   }
 }
