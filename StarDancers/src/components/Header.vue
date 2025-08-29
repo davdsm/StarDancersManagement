@@ -2,11 +2,14 @@
 import PasswordModal from "./login/PasswordModal.vue";
 import DropdownMenu from "./DropdownMenu.vue";
 import Notification from "./Notification.vue";
-import { getBirthdays, getNotifications } from "@/services/students";
+import {
+  getBirthdays,
+  getNotifications,
+  getStudents,
+} from "@/services/students";
 import { getCookie, removeCookie, updatePassword } from "@/services/auth";
 import { useUserStore } from "@/stores/user";
-import { getFamilies } from "@/services/families";
-import { onMounted } from "vue";
+import type { Family } from "./FamiliesTable/ModalTable.vue";
 
 export default {
   data() {
@@ -17,6 +20,8 @@ export default {
       menu: false as boolean,
       notifications: [] as Array<any>,
       isAdmin: false,
+      family: <Family>{},
+      todayDay: new Date().getDate(),
     };
   },
   components: {
@@ -35,6 +40,7 @@ export default {
     const user = useUserStore();
     const family = await user.getFamily();
     this.isAdmin = user.isAdmin;
+    this.family = family as Family;
 
     this.username = user.isAdmin
       ? storedUser
@@ -177,6 +183,18 @@ export default {
         :target="notif.attributes.Target"
         :title="notif.attributes.Title"
         :message="notif.attributes.Message"
+      />
+      <Notification
+        v-if="
+          !isAdmin &&
+          Object.keys(family).length > 0 &&
+          todayDay > 8 &&
+          family.attributes.Students.data.find((stud) => !stud.attributes.Paid)
+        "
+        design="Aviso"
+        target="Família"
+        title="Atraso no Pagamento"
+        message="Atenção, existem alunos que não foram marcados como pagos."
       />
     </div>
   </header>

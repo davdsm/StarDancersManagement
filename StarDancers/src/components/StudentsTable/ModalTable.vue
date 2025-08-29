@@ -3,9 +3,10 @@ import { getFamilyByStudentId } from "@/services/families";
 import DeletePoup from "./DeletePoup.vue";
 import ErrorModal from "./ErrorModal.vue";
 import { useUserStore } from "@/stores/user";
+import type { Family } from "../FamiliesTable/ModalTable.vue";
 
 export default {
-  props: ["close", "student", "update", "delete", "create", "error"],
+  props: ["close", "student", "update", "delete", "create", "error", "pay"],
   data() {
     return {
       local_student: JSON.parse(JSON.stringify(this.student)),
@@ -23,12 +24,16 @@ export default {
       that: this,
       errorMsg: this.error,
       isAdmin: false,
-      family: {
-        attributes: {
-          Name: "",
-        },
-      },
+      family: <Family | undefined>undefined,
+      paymentMethod: <undefined | string>undefined,
+      loading: <boolean | number>false,
+      openFamily: false,
     };
+  },
+  watch: {
+    students() {
+      this.family = JSON.parse(JSON.stringify(this.family));
+    },
   },
   methods: {
     async submit(e: any) {
@@ -46,11 +51,17 @@ export default {
         this.errorMsg = success;
       }
     },
+    async payFamilyStudent(studentId: number, status: boolean) {
+      this.loading = studentId;
+      await this.pay(studentId, status, status && this.paymentMethod);
+      const fam = await getFamilyByStudentId(this.student.id);
+      this.family = fam;
+      this.loading = false;
+    },
   },
   components: { DeletePoup, ErrorModal },
   async mounted() {
     const user = useUserStore();
-
     if (this.student) {
       const fam = await getFamilyByStudentId(this.student.id);
       if (fam) this.family = fam;
@@ -63,20 +74,20 @@ export default {
 
 <template>
   <div
-    class="z-40 w-full h-full flex justify-center items-top fixed top-0 right-0 left-0"
+    class="z-40 w-full h-full flex justify-center items-start fixed top-0 right-0 left-0 gap-8"
   >
     <div
       class="fixed w-full h-full z-40 bg-slate-400 opacity-30"
       @click="() => close()"
     ></div>
     <div
-      class="mt-5 relative w-full max-w-2xl h-full md:h-auto overflow-y-auto overflow-x-hidden z-50"
+      class="md:h-auto max-h-[calc(100%-2rem)] mt-5 relative w-full max-w-2xl h-full overflow-y-auto overflow-x-hidden z-50 bg-white rounded-lg shadow"
     >
       <!-- Modal content -->
       <form
         action="#"
         @submit="(e: any) => isAdmin ? submit(e) : null"
-        class="relative bg-white rounded-lg shadow"
+        class="relative"
       >
         <!-- Modal header -->
         <div
@@ -90,7 +101,8 @@ export default {
           </h3>
           <span
             v-if="family && family.attributes.Name !== ''"
-            class="ml-auto px-4 py-2 font-bold bg-teal-200 rounded text-xs text-teal-800"
+            @click="openFamily = true"
+            class="cursor-pointer ml-auto px-4 py-2 font-bold bg-teal-200 rounded text-xs text-teal-800"
           >
             Família {{ family.attributes.Name }}
           </span>
@@ -421,6 +433,215 @@ export default {
           </button>
         </div>
       </form>
+    </div>
+    <div
+      v-if="family && openFamily"
+      class="mt-5 relative w-1/5 bg-white rounded-lg shadow z-50 flex justify-center items-center flex-col gap-4"
+    >
+      <div
+        class="flex justify-between items-center p-4 rounded-t border-b gap-4"
+      >
+        <h3 class="text-xl font-semibold text-gray-900" v-if="isAdmin">
+          Família {{ family.attributes.Name }}
+        </h3>
+        <button
+          type="button"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex items-center"
+          @click="openFamily = false"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+        </button>
+      </div>
+      <div
+        v-if="
+          family?.attributes?.Students.data.find(
+            (student) => !student.attributes.Paid
+          )
+        "
+      >
+        <ul class="flex flex-row gap-6 justify-between items-center py-4">
+          <li>
+            <button
+              @click="paymentMethod = 'MBWay'"
+              :class="paymentMethod === 'MBWay' ? 'opacity-100' : 'opacity-30'"
+            >
+              <img
+                src="../../assets/paymentMethods/mbway.png"
+                class="w-5 h-8 object-contain aspect-square"
+              />
+            </button>
+          </li>
+          <li>
+            <button
+              @click="paymentMethod = 'Multibanco'"
+              :class="
+                paymentMethod === 'Multibanco' ? 'opacity-100' : 'opacity-30'
+              "
+            >
+              <img
+                src="../../assets/paymentMethods/multibanco.png"
+                class="w-5 h-8 object-contain aspect-square"
+              />
+            </button>
+          </li>
+          <li>
+            <button
+              @click="paymentMethod = 'Money'"
+              :class="paymentMethod === 'Money' ? 'opacity-100' : 'opacity-30'"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"
+                />
+              </svg>
+            </button>
+          </li>
+          <li>
+            <button
+              @click="paymentMethod = 'Transfer'"
+              :class="
+                paymentMethod === 'Transfer' ? 'opacity-100' : 'opacity-30'
+              "
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z"
+                />
+              </svg>
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex items-center"
+              @click="paymentMethod = undefined"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+            </button>
+          </li>
+        </ul>
+      </div>
+      <div class="w-full px-6 pb-8">
+        <ul class="w-full relative flex flex-col gap-2">
+          <li
+            v-for="student in family?.attributes?.Students.data"
+            class="flex justify-between items-center w-full"
+          >
+            <span class="truncate w-3/5">{{ student.attributes.Name }}</span>
+            <img
+              v-if="student.attributes.PaymentMethod === 'MBWay'"
+              src="../../assets/paymentMethods/mbway.png"
+              class="w-4 h-8 object-contain aspect-square"
+            />
+            <img
+              v-if="student.attributes.PaymentMethod === 'Multibanco'"
+              src="../../assets/paymentMethods/multibanco.png"
+              class="w-4 h-8 object-contain aspect-square"
+            />
+            <svg
+              v-if="student.attributes.PaymentMethod === 'Money'"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-4"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"
+              />
+            </svg>
+            <svg
+              v-if="student.attributes.PaymentMethod === 'Transfer'"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-4"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z"
+              />
+            </svg>
+            <span
+              v-if="student.attributes.Paid && loading !== student.id"
+              @click="payFamilyStudent(student.id, false)"
+              class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900 shrink-0"
+              :class="isAdmin ? 'cursor-pointer' : 'cursor-not-allowed'"
+              >Pago
+            </span>
+            <span
+              v-if="!student.attributes.Paid && loading !== student.id"
+              @click="payFamilyStudent(student.id, true)"
+              class="bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-red-200 dark:text-red-900"
+              :class="isAdmin ? 'cursor-pointer' : 'cursor-not-allowed'"
+              >Não Pago</span
+            >
+            <span v-if="loading === student.id">
+              <svg
+                class="inline mr-2 w-4 h-4 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                viewBox="0 0 100 101"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                  fill="currentFill"
+                />
+              </svg>
+            </span>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
   <DeletePoup

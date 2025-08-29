@@ -267,6 +267,7 @@ export default {
     :update="update"
     :delete="delete"
     :create="create"
+    :pay="pay"
     v-bind:student="student"
   />
 </template>

@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import Header from "./components/Header.vue";
 import Sidebar from "./components/Sidebar.vue";
 import { useUserStore } from "@/stores/user"; // Adjust the path if needed
 
 const userStore = useUserStore();
+const route = useRoute();
 
-// reactive values derived from the store
 const isAdmin = computed(() => userStore.isAdmin);
-const showHeader = computed(() => !!userStore.user);
+const showHeader = computed(() => route.path !== "/login");
 
 onMounted(async () => {
   await userStore.fetchUser();
