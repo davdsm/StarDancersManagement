@@ -14,7 +14,7 @@ export const doLogin = async (username: String, password: String) => {
       identifier: username,
       password: password,
     })
-    .then((response) => {
+    .then((response) => {      
       createCookie("user", response.data.user.username);
       createCookie("token", response.data.jwt);
       const user = useUserStore();

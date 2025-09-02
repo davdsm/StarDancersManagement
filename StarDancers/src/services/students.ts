@@ -30,7 +30,6 @@ export const getBirthdays = async () => {
       return response.data.data;
     })
     .catch((response) => {
-      console.log(response);
       return response.response ? response.response.status : 500;
     });
 };
@@ -147,18 +146,27 @@ export const createStudent = async (payload: any) => {
     });
 };
 
-export const getNotifications = async () => {
+export const getNotifications = async (family: string, classes: string[]) => {
+
   const query = qs.stringify(
     {
       publicationState: "live",
       sort: ["id:desc"],
       filters: {
-        Target: {
-          $eq: "Todos",
-        },
-        Active: {
-          $eq: true,
-        },
+        $and: [
+          {
+            Active: { $eq: true },
+          },
+          {
+            $or: [
+              { Target: { $eq: "Todos" } },
+              { Families: { Name: { $containsi: family } } },
+              ...classes.map((c) => ({
+                Turma: { $containsi: c },
+              })),
+            ],
+          },
+        ],
       },
     },
     { encodeValuesOnly: true }

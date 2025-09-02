@@ -29,7 +29,7 @@ export default {
     DropdownMenu,
     Notification,
   },
-  async beforeMount() {
+  async mounted() {
     // check login
     const storedUser = await getCookie("user");
     if (!storedUser) {
@@ -38,7 +38,8 @@ export default {
     }
 
     const user = useUserStore();
-    const family = await user.getFamily();
+    const family = await user.getFamily();    
+
     this.isAdmin = user.isAdmin;
     this.family = family as Family;
 
@@ -49,8 +50,18 @@ export default {
     // birthdays
     this.birtdays = await getBirthdays();
 
+    const classes = new Set(
+      family?.attributes.Students.data.map(
+        (student) => student.attributes.Class
+      )
+    );
+
     // notifications
-    this.notifications = await getNotifications();
+    this.notifications = await getNotifications(
+      family?.attributes.Name ?? "",
+      Array.from(classes)
+    );
+    
   },
   methods: {
     async putPassword(password: string) {

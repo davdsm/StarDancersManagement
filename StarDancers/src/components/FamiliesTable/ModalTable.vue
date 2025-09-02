@@ -196,7 +196,10 @@ export default {
                     :for="`student-${student.id}`"
                     class="flex w-full cursor-pointer items-center px-3 py-2"
                   >
-                    <div class="inline-flex items-center">
+                    <div
+                      class="inline-flex items-center"
+                      @click="pushStudent(student)"
+                    >
                       <label
                         class="flex items-center cursor-pointer relative"
                         :for="`student-${student.id}`"
@@ -208,7 +211,6 @@ export default {
                           :checked="
                             !!students.find((stud) => student.id === stud.id)
                           "
-                          @click="pushStudent(student)"
                         />
                         <span
                           class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"

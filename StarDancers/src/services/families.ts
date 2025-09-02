@@ -8,18 +8,32 @@ const headers = {
   },
 };
 
-export const getFamilies = async (page: number, filters = "") => {
+export const getFamilies = async (
+  page: number,
+  filters = "",
+  email?: string
+) => {
+  const filterObj: any = {};
+
+  if (email) {
+    filterObj.Email = { $eq: email };
+  }
+
   const query = qs.stringify(
     {
       publicationState: "live",
       sort: ["id:desc"],
-      pagination: { page, pageSize: 25 },
+      pagination: { page, pageSize: 50 },
       populate: { Students: "*" },
+      filters: filterObj,
     },
     { encodeValuesOnly: true }
   );
 
-  const url = `${import.meta.env.VITE_ADDRESS}/api/families?${query}${filters}`;
+  const url = `${import.meta.env.VITE_ADDRESS}/api/families?${query}${
+    filters ? `&${filters}` : ""
+  }`;
+
   const { data } = await axios.get(url, headers);
 
   return [data.data, data.meta.pagination];
@@ -130,4 +144,23 @@ export const getFamilyByStudentId = async (studentId: number) => {
 
   // Return the first family found (should be only one) or null if not found
   return data.data.length > 0 ? data.data[0] : null;
+};
+
+export const searchFamilies = async (word: string) => {
+  if (word) {
+    const filters = `&filters[$or][0][Name][$containsi]=${word}&filters[$or][3][Class][$containsi]=${word}&filters[$or][5][StudentID][$containsi]=${word}`;
+    return axios
+      .get(
+        `${import.meta.env.VITE_ADDRESS}/api/students?sort=id:desc${filters}`,
+        headers
+      )
+      .then((response) => {
+        return [response.data.data, response.data.meta.pagination];
+      })
+      .catch((response) => {
+        return response.response ? response.response.status : 500;
+      });
+  } else {
+    return getFamilies(1);
+  }
 };

@@ -54,9 +54,9 @@ export default {
             <span v-if="open" class="hidden md:block">Alunos</span>
           </router-link>
         </li>
-        <!-- <li class="mb-2 hover:bg-gray-100 rounded-lg">
+        <li class="mb-2 hover:bg-gray-100 rounded-lg">
           <router-link
-            to="/"
+            to="/notifications"
             class="py-4 flex items-center gap-2"
             :class="{ 'px-4 ': open, 'px-2': !open }"
           >
@@ -75,9 +75,9 @@ export default {
               />
             </svg>
 
-            <span v-if="open" class="hidden md:block">Avisos</span>
+            <span v-if="open" class="hidden md:block">Notificações</span>
           </router-link>
-        </li> -->
+        </li>
         <li class="mb-2 hover:bg-gray-100 rounded-lg">
           <router-link
             to="/families"

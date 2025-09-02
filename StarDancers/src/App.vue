@@ -12,7 +12,9 @@ const isAdmin = computed(() => userStore.isAdmin);
 const showHeader = computed(() => route.path !== "/login");
 
 onMounted(async () => {
-  await userStore.fetchUser();
+  if (userStore.user) {    
+    await userStore.fetchUser();
+  }
 });
 </script>
 

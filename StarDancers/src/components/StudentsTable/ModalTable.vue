@@ -101,8 +101,9 @@ export default {
           </h3>
           <span
             v-if="family && family.attributes.Name !== ''"
-            @click="openFamily = true"
-            class="cursor-pointer ml-auto px-4 py-2 font-bold bg-teal-200 rounded text-xs text-teal-800"
+            @click="isAdmin ? (openFamily = true) : null"
+            class="ml-auto px-4 py-2 font-bold bg-teal-200 rounded text-xs text-teal-800"
+            :class="isAdmin ? 'cursor-pointer' : 'cursor-initial'"
           >
             Família {{ family.attributes.Name }}
           </span>

@@ -19,16 +19,16 @@ export const useUserStore = defineStore("user", {
   actions: {
     async fetchUser() {
       if (!this.user) {
-        const data = await getCurrentUser();        
+        const data = await getCurrentUser();
         if (data) {
           this.user = data;
           this.isAdmin = data.role.type === "administrador";
         }
-      }
-      if (!this.family) {
-        const family = await getFamilies(1, `email=${this.user?.email}`);
-        this.family = family[0][0];
-      }
+      }      
+
+      const family = await getFamilies(1, ``, this.user?.email);
+      this.family = family[0][0];
+
       return;
     },
     async getStudents() {
@@ -37,7 +37,7 @@ export const useUserStore = defineStore("user", {
       }
       return this.family?.attributes.Students.data;
     },
-    async getFamily() {
+    async getFamily() {      
       if (!this.family) {
         await this.fetchUser();
       }
