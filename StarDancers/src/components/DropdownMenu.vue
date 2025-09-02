@@ -5,7 +5,7 @@ export default {
     return {
       link: `${
         import.meta.env.VITE_ADDRESS
-      }/uploads/Politica_Privacidade_Final_ebaef2dfab.pdf?updated_at=2022-12-05T18:40:42.256Z`,
+      }/uploads/POLITICA_DE_PRIVACIDADE_imprimir_frente_e_verso_300_copias_71c38d7e96.pdf?updated_at=2025-09-02T15:51:17.120Z`,
     };
   },
 };
