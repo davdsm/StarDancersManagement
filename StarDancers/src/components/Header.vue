@@ -38,7 +38,7 @@ export default {
     }
 
     const user = useUserStore();
-    const family = await user.getFamily();    
+    const family = await user.getFamily();
 
     this.isAdmin = user.isAdmin;
     this.family = family as Family;
@@ -61,7 +61,6 @@ export default {
       family?.attributes.Name ?? "",
       Array.from(classes)
     );
-    
   },
   methods: {
     async putPassword(password: string) {
@@ -102,7 +101,7 @@ export default {
       <div
         v-if="isAdmin"
         id="tooltip"
-        class="w-30 mr-12 max-sm:absolute max-sm:w-full max-sm:text-center max-sm:top-80"
+        class="w-30 mr-12 max-sm:absolute max-sm:w-full max-sm:text-center max-sm:top-20"
       >
         <div
           class="pt-1 text-slate-600 font-bold max-sm:flex max-sm:justify-center max-sm:items-center"
@@ -202,10 +201,22 @@ export default {
           todayDay > 8 &&
           family.attributes.Students.data.find((stud) => !stud.attributes.Paid)
         "
-        design="Aviso"
+        design="Erro"
         target="Família"
         title="Atraso no Pagamento"
-        message="Atenção, existem alunos que não foram marcados como pagos."
+        message="Atenção, inscrição comprometida. Sujeito a pagamento de uma nova inscrição."
+      />
+      <Notification
+        v-if="
+          !isAdmin &&
+          Object.keys(family).length > 0 &&
+          todayDay === 8 &&
+          family.attributes.Students.data.find((stud) => !stud.attributes.Paid)
+        "
+        design="Aviso"
+        target="Família"
+        title="Regularize o Pagamento"
+        message="Atenção, lembramos que a mensalidade está em atraso. Regularize a situação até ao final do dia de hoje."
       />
     </div>
   </header>
