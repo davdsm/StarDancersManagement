@@ -2,12 +2,21 @@ import dotenv from "dotenv";
 import nodeCron from "node-cron";
 import request from "request";
 import Twilio from "twilio";
-import { getStudents, resetJobs, sleep } from "./api.js";
+import { getStudents, getTodayBirthdays, resetJobs, sleep } from "./api.js";
 
 dotenv.config();
 
-const debug = false;
+const debug = true;
 let errorContacts = [];
+
+
+/*
+* Credentials and on system vars for security reasons
+*/
+const accountSid = process.env.SMS_ACCOUNT_ID;
+const authToken = process.env.SMS_AUTH_TOKEN;
+
+const client = new Twilio.Twilio(accountSid, authToken);
 
 /*
  * Save the list of parents that received an SMS in order to not duplicate sms receivers
@@ -60,17 +69,8 @@ const debugContacts = {
 
 async function sendSMS(phoneNumber, parentName) {
   const text = `${
-    debug ? "teste - " : ""
-  }StarDancers_dance_studio, lembra que o vencimento da mensalidade terminou ontem. O Contacto serve para lembrar a regularização da mesma.
-Antenciosamente, StarDancers.`;
-
-  /*
-   * Credentials and on system vars for security reasons
-   */
-  const accountSid = process.env.SMS_ACCOUNT_ID;
-  const authToken = process.env.SMS_AUTH_TOKEN;
-
-  const client = new Twilio.Twilio(accountSid, authToken);
+    debug ? "teste-" : ""
+  }STARDANCERS informa que sua mensalidade vence hoje. Solicitamos a regularização até o final do dia. Atenciosamente, Academia StarDancers.`;
 
   client.messages.create(
     {
@@ -134,14 +134,9 @@ function sendEmail(parents) {
  * In the first day of every month we need to
  * set every user as paid = false;
  */
-const day1st = "00 01 00 1 * *";
-nodeCron.schedule(
-  day1st, // 1st Every Month at 9am
-  async () => {
-    await resetJobs();
-    console.log("👪 Everyone Reseted");
-  }
-);
+const day1st = "00 01 00 1 * *"; // Dia 1 à 00h01
+const day8th = "01 17 8 * *"; // Dia 8 às 18h
+const everyDay10am = "0 0 10 * * *"; // Todos os dias às 10h00
 /*
  * Because stripe has pagination on get all
  * we need to go through all pages
@@ -235,15 +230,109 @@ const goThroughUsers = async (page) => {
 
 console.log("🐬 Everyone will be set as Not Paid at day 1st every month.");
 console.log("🐬 Not Paid students will receive a sms text day 8 every month.");
-// 01 00 18 8 * * -> Dia 8 de cada mês às 18h00
 
-nodeCron.schedule("01 17 8 * *", async () => {
+console.log("");
+
+const birthdayMessages = async () => {
+
+  const debugContacts = [
+    {
+    id: 1,
+    attributes: {
+      Name: "David Magalhães",
+      ParentName: "David Magalhães",
+      ParentContact: "912074406",
+      ParentEmail: "geral@davdsm.pt",
+      ParentNIF: "0",
+      Class: "Adultos",
+      Price: 1,
+      Observations: "Nada",
+      ImageRights: true,
+      Paid: false,
+      Week: ["Segunda"],
+      createdAt: "2024-04-09T21:19:59.927Z",
+      updatedAt: "2024-04-09T21:19:59.927Z",
+      publishedAt: "2024-04-09T21:19:59.926Z",
+      BornDate: "1989-10-11",
+    }},{
+    id: 2,
+    attributes: {
+      Name: "Ana Cláudia Oliveira Gonçalves ",
+      ParentName: "Ana Gonçalves ",
+      ParentContact: "912642786",
+      ParentEmail: "goncalvesana2@hotmail.com",
+      ParentNIF: "0",
+      Class: "Adultos",
+      Price: 1,
+      Observations: "Nada",
+      ImageRights: true,
+      Paid: false,
+      Week: ["Segunda"],
+      createdAt: "2024-04-09T21:19:59.927Z",
+      updatedAt: "2024-04-09T21:19:59.927Z",
+      publishedAt: "2024-04-09T21:19:59.926Z",
+      BornDate: "1989-10-11",
+    },
+  }
+  ]
+
+  const todaysBirthdays = debug ? debugContacts : await getTodayBirthdays();
+  const results = [];
+
+   const text = `${
+        debug ? "teste-" : ""
+      }Feliz aniversário! Que a energia da dança te contagie e faça brilhar!⭐ Com carinho StarDancers`;      
+ 
+  for (const birthday of todaysBirthdays) {
+
+    let phoneNumber = birthday.attributes.ParentContact;
+
+     if (birthday.attributes.ParentContact.indexOf("+") === -1) {
+        phoneNumber = "+351" + birthday.attributes.ParentContact;
+      }
+
+      const message = client.messages.create(
+        {
+          body: text,
+          messagingServiceSid: "MG23ac2229bf53017625d9c3d9e095b47c",
+          to: phoneNumber,
+        },
+        function (error, message) {
+          if (error) {
+            errorContacts.push(`${phoneNumber}(${birthday.attributes.Name})`);
+            console.log(`There is an error with ${phoneNumber}(${birthday.attributes.Name}).`);
+            console.log(`${error}, ${message}`);
+          }
+        }
+      );
+
+      console.log(`✅ Sent Happy Birthday to to ${phoneNumber} | ${birthday.attributes.Name}}`);
+      results.push({ number: phoneNumber, sid: message.sid, status: "sent" });
+  }
+}
+
+// Correr o script - 01 00 18 8 * * -> Dia 8 de cada mês às 18h00
+nodeCron.schedule(day8th, async () => {
   errorContacts = [];
   parents = [];
   goThroughUsers();
 });
 
-console.log("");
+// Dar reset - 01 17 8 * * * * -> Dia 1 de cada mês às 00h01
+nodeCron.schedule(
+  day1st, // 1st Every Month at 9am
+  async () => {
+    await resetJobs();
+    console.log("👪 Everyone Reseted");
+  }
+);
+
+nodeCron.schedule(
+  everyDay10am, // 1st Every Month at 10am
+  async () => {
+    await birthdayMessages();
+  }
+);
 
 if (debug) {
   errorContacts = [];

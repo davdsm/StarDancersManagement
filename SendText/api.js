@@ -61,3 +61,24 @@ export const resetJobs = async () => {
     });
 };
 
+/*
+ * Get all students whose birthday is today
+ */
+export const getTodayBirthdays = async () => {
+  const today = new Date();
+  const day = today.getDate().toString().padStart(2, "0"); // e.g. "04"
+  const month = (today.getMonth() + 1).toString().padStart(2, "0"); // e.g. "09"  
+
+  return axios
+    .get(
+      `${apiAddress}/api/students?filters[BornDate][$contains]=-${month}-${day}`,
+      headers
+    )
+    .then((response) => {
+      return response.data.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error.response ? error.response.status : 500;
+    });
+}; 
