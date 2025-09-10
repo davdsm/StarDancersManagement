@@ -6,7 +6,7 @@ import { getStudents, getTodayBirthdays, resetJobs, sleep } from "./api.js";
 
 dotenv.config();
 
-const debug = true;
+const debug = false;
 let errorContacts = [];
 
 
@@ -230,6 +230,7 @@ const goThroughUsers = async (page) => {
 
 console.log("🐬 Everyone will be set as Not Paid at day 1st every month.");
 console.log("🐬 Not Paid students will receive a sms text day 8 every month.");
+console.log("🎂 Birthday messages will be sent.");
 
 console.log("");
 
