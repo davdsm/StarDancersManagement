@@ -18,12 +18,12 @@ export default {
       students: [],
       loading: <any>false,
       query: "",
-      showModal: <Boolean>false,
+      showModal: <boolean>false,
       student: {},
       birtdays: <Array<any>>[],
-      page: <Number>1,
+      page: <number>1,
       pagination: <any>{},
-      isAdmin: <Boolean>false,
+      isAdmin: <boolean>false,
     };
   },
   methods: {
@@ -36,7 +36,7 @@ export default {
           "Paid",
           status,
           id,
-          this.query,
+          this.query.length > 0,
           method
         );
         this.loading = false;
@@ -67,7 +67,7 @@ export default {
         return pagination;
       }
     },
-    async delete(id: Number) {
+    async delete(id: number) {
       this.loading = id;
       [this.students, this.pagination] = await removeStudent(id as number);
       this.showModal = false;
@@ -89,7 +89,7 @@ export default {
           Paid: <boolean>false,
           Week: <Array<string>>[],
           BornDate: <Date>new Date(),
-          StudentID: <String>"0",
+          StudentID: <string>"0",
         },
       };
       this.student = data;
@@ -107,7 +107,7 @@ export default {
       this.loading = false;
       return 200;
     },
-    async handlePagination(e: any, page: Number) {
+    async handlePagination(e: any, page: number) {
       e.preventDefault();
       this.page = page;
       [this.students, this.pagination] = await getStudents(
