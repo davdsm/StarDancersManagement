@@ -35,8 +35,8 @@ export const getBirthdays = async () => {
 };
 
 export const getStudents = async (
-  page: Number,
-  withFilters: boolean | Boolean
+  page: number,
+  withFilters: boolean
 ) => {
   const user = useUserStore();
   await user.fetchUser();
