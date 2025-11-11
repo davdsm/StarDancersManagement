@@ -11,7 +11,7 @@ const headers = {
   },
 };
 
-export const sleep = ms => new Promise(r => setTimeout(r, ms));
+export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const resetJob = async (id) => {
   return axios
@@ -25,8 +25,20 @@ const resetJob = async (id) => {
     .then(() => true);
 };
 
+const setStudent = async (id, data) => {
+  return axios
+    .put(
+      `${apiAddress}/api/students/${id}`,
+      {
+        data,
+      },
+      headers
+    )
+    .then(() => true);
+};
+
 export const getStudents = async (page) => {
-  let filters = page ? `&pagination[page]=${page}` : '';
+  let filters = page ? `&pagination[page]=${page}` : "";
   return axios
     .get(
       `${apiAddress}/api/students?filters[Paid][$eq]=false${filters}`,
@@ -36,24 +48,39 @@ export const getStudents = async (page) => {
       return response.data;
     })
     .catch((response) => {
-      console.log(response)
+      console.log(response);
       return response.response ? response.response.status : 500;
     });
 };
 
-export const resetJobs = async () => {
+export const resetJobs = async (page) => {
+  var actualPage = page;
+  var pageSize = 50;
+  if (!actualPage) actualPage = 1;
   return axios
     .get(
-      `${apiAddress}/api/students?filters[Paid][$eq]=true`,
+      `${apiAddress}/api/students?sort=id:desc&pagination[pageSize]=${pageSize}&pagination[page]=${actualPage}`,
       headers
     )
     .then(async (response) => {
-      if(response.data.meta.pagination.pageCount > 1) {
-        await response.data.data.forEach(async (student) => resetJob(student.id));
-        resetJobs();
-      } else {
-        return response.data.data.forEach(async (student) => resetJob(student.id));
-      }       
+      actualPage = actualPage + 1;
+      if (response.data.data.length > 0) {
+        await response.data.data.forEach(async (student) => {
+          if (!student.attributes.Paid) {
+            setStudent(student.id, {
+              DelayedPayments: Number(student.attributes.DelayedPayments) + 1,
+            });
+          } else if (Number(student.attributes.PaidMonths) > 0) {
+            setStudent(student.id, {
+              PaidMonths: Number(student.attributes.PaidMonths) - 1,
+            });
+          } else {
+            resetJob(student.id);
+          }
+        });
+
+        resetJobs(actualPage);
+      }
     })
     .catch((response) => {
       throw response;

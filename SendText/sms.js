@@ -231,6 +231,8 @@ const goThroughUsers = async (page) => {
 console.log("🐬 Everyone will be set as Not Paid at day 1st every month.");
 console.log("🐬 Not Paid students will receive a sms text day 8 every month.");
 console.log("🎂 Birthday messages will be sent.");
+// 01 00 18 8 * * -> Dia 8 de cada mês às 18h30
+// 01 00 18 8 * * -> Mensagem de Aniversário às 09h00
 
 console.log("");
 
