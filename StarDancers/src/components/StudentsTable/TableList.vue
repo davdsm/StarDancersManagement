@@ -2,12 +2,14 @@
 import { useUserStore } from "@/stores/user";
 
 export default {
-  props: ["students", "query", "loading", "show", "student", "pay"],
+  props: ["students", "query", "loading", "show", "student", "pay", "update"],
   data() {
     return {
       local_students: JSON.parse(JSON.stringify(this.students)),
       isAdmin: false,
       activePaymentSelector: <null | number>null,
+      showMonths: <boolean>false,
+      monthsNumber: <number>1,
     };
   },
   watch: {
@@ -18,6 +20,7 @@ export default {
   methods: {
     togglePaymentSelector(itemId: number) {
       this.pay(itemId, true);
+      this.monthsNumber = 1;
       this.activePaymentSelector =
         this.activePaymentSelector === itemId ? null : itemId;
     },
@@ -25,8 +28,26 @@ export default {
       this.pay(itemId, true, method);
       this.cancelPaymentSelection();
     },
+    payMonths(itemId: number, delayedPayments: number) {
+      if (this.monthsNumber >= delayedPayments) {
+        this.update(itemId, {
+          DelayedPayments: 0,
+          PaidMonths: this.monthsNumber - delayedPayments,
+        });
+      } else if( this.monthsNumber <= delayedPayments) {
+        this.update(itemId, {
+          DelayedPayments: delayedPayments - this.monthsNumber,
+          PaidMonths: 0,
+        });
+      } else {
+        this.update(itemId, { PaidMonths: this.monthsNumber });
+      }
+      this.showMonths = false;
+    },
     cancelPaymentSelection() {
       this.activePaymentSelector = null;
+      this.monthsNumber = 1;
+      this.showMonths = false;
     },
   },
   mounted() {
@@ -59,7 +80,33 @@ export default {
             class="py-4 px-6 font-medium title whitespace-nowrap cursor-pointer"
             @click="() => show(item)"
           >
-            {{ item.attributes.Name }}
+            <div class="flex justify-left items-center gap-2">
+              <div
+                v-if="Number(item.attributes.DelayedPayments) > 0"
+                class="group p-2 bg-amber-400 rounded text-white relative flex justify-center items-center"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+                  />
+                </svg>
+                <span
+                  class="group-hover:block hidden absolute -top-10 -left-2 bg-slate-800 p-2 text-white rounded"
+                  >Atraso de Meses:
+                  {{ Number(item.attributes.DelayedPayments) }}</span
+                >
+              </div>
+              {{ item.attributes.Name }}
+            </div>
           </td>
           <td class="py-4 px-6 py-4 px-6 font-medium title whitespace-nowrap">
             <div class="flex flex-col">
@@ -70,7 +117,7 @@ export default {
             </div>
           </td>
           <td class="py-4 px-6 py-4 px-6 font-medium title whitespace-nowrap">
-            <div class="flex flex-col">
+            <div class="flex flex-col relative">
               {{ item.attributes.Price }}€
               <span class="pt-1 text-slate-600">Mensal</span>
             </div>
@@ -91,9 +138,16 @@ export default {
           >
             <span
               v-if="loading !== item.id && item.attributes.Paid"
-              @click="pay(item.id, !item.attributes.Paid) && cancelPaymentSelection()"
-              class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900 shrink-0"
+              @click="
+                pay(item.id, !item.attributes.Paid) && cancelPaymentSelection()
+              "
+              class="flex items-center bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900 shrink-0"
               >Pago
+              <span
+                v-if="item.attributes.PaidMonths > 1"
+                class="text-xs bg-green-400 font-bold text-white rounded-full w-5 h-5 flex items-center justify-center ml-2"
+                >x{{ item.attributes.PaidMonths }}</span
+              >
             </span>
             <span v-if="loading === item.id">
               <svg
@@ -213,6 +267,60 @@ export default {
                       stroke-linecap="round"
                       stroke-linejoin="round"
                       d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z"
+                    />
+                  </svg>
+                </button>
+              </li>
+
+              <li class="shrink-0 relative">
+                <button @click="() => (showMonths = true)">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M6.75 2.994v2.25m10.5-2.25v2.25m-14.252 13.5V7.491a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v11.251m-18 0a2.25 2.25 0 0 0 2.25 2.25h13.5a2.25 2.25 0 0 0 2.25-2.25m-18 0v-7.5a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v7.5m-6.75-6h2.25m-9 2.25h4.5m.002-2.25h.005v.006H12v-.006Zm-.001 4.5h.006v.006h-.006v-.005Zm-2.25.001h.005v.006H9.75v-.006Zm-2.25 0h.005v.005h-.006v-.005Zm6.75-2.247h.005v.005h-.005v-.005Zm0 2.247h.006v.006h-.006v-.006Zm2.25-2.248h.006V15H16.5v-.005Z"
+                    />
+                  </svg>
+                </button>
+                <span
+                  v-if="monthsNumber > 1"
+                  class="absolute text-xs bg-teal-400 text-white rounded-full p-[2px] -top-2 -right-3"
+                  >x{{ monthsNumber }}</span
+                >
+              </li>
+
+              <li v-if="showMonths" class="shrink-0 flex items-center gap-4">
+                <input
+                  type="number"
+                  placeholder="1"
+                  v-model="monthsNumber"
+                  class="bg-gray-100 pl-5 w-12 rounded p-0"
+                />
+                <button
+                  class="text-white bg-teal-400 p-[4px] rounded-full"
+                  @click="
+                    () => payMonths(item.id, item.attributes.DelayedPayments)
+                  "
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-3"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="m4.5 12.75 6 6 9-13.5"
                     />
                   </svg>
                 </button>

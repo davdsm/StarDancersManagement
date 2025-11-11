@@ -23,7 +23,7 @@ export const getFamilies = async (
     {
       publicationState: "live",
       sort: ["id:desc"],
-      pagination: { page, pageSize: 50 },
+      pagination: { page, pageSize: 500 },
       populate: { Students: "*" },
       filters: filterObj,
     },
