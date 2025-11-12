@@ -28,6 +28,8 @@ export default {
       paymentMethod: <undefined | string>undefined,
       loading: <boolean | number>false,
       openFamily: false,
+      showMonths: <boolean>false,
+      monthsNumber: <number>1,
     };
   },
   watch: {
@@ -57,6 +59,28 @@ export default {
       const fam = await getFamilyByStudentId(this.student.id);
       this.family = fam;
       this.loading = false;
+      if (this.monthsNumber > 1) {
+        this.payMonths(
+          studentId,
+          this.local_student.attributes.DelayedPayments
+        );
+      }
+    },
+    payMonths(itemId: number, delayedPayments: number) {
+      if (this.monthsNumber >= delayedPayments) {
+        this.update(itemId, {
+          DelayedPayments: 0,
+          PaidMonths: this.monthsNumber - delayedPayments,
+        });
+      } else if (this.monthsNumber <= delayedPayments) {
+        this.update(itemId, {
+          DelayedPayments: delayedPayments - this.monthsNumber,
+          PaidMonths: 0,
+        });
+      } else {
+        this.update(itemId, { PaidMonths: this.monthsNumber });
+      }
+      this.showMonths = false;
     },
   },
   components: { DeletePoup, ErrorModal },
@@ -540,11 +564,52 @@ export default {
               </svg>
             </button>
           </li>
+          <li class="">
+            <div
+              :class="
+                showMonths
+                  ? 'flex flex-col justify-between items-center gap-2'
+                  : ''
+              "
+            >
+              <button
+                @click="showMonths = !showMonths"
+                :class="showMonths ? 'opacity-100' : 'opacity-30'"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M6.75 2.994v2.25m10.5-2.25v2.25m-14.252 13.5V7.491a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v11.251m-18 0a2.25 2.25 0 0 0 2.25 2.25h13.5a2.25 2.25 0 0 0 2.25-2.25m-18 0v-7.5a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v7.5m-6.75-6h2.25m-9 2.25h4.5m.002-2.25h.005v.006H12v-.006Zm-.001 4.5h.006v.006h-.006v-.005Zm-2.25.001h.005v.006H9.75v-.006Zm-2.25 0h.005v.005h-.006v-.005Zm6.75-2.247h.005v.005h-.005v-.005Zm0 2.247h.006v.006h-.006v-.006Zm2.25-2.248h.006V15H16.5v-.005Z"
+                  />
+                </svg>
+              </button>
+
+              <input
+                v-if="showMonths"
+                type="number"
+                placeholder="1"
+                v-model="monthsNumber"
+                class="bg-gray-100 pl-5 w-12 rounded p-0"
+              />
+            </div>
+          </li>
           <li>
             <button
               type="button"
               class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex items-center"
-              @click="paymentMethod = undefined"
+              @click="
+                (paymentMethod = undefined),
+                  (showMonths = false),
+                  (monthsNumber = 1)
+              "
             >
               <svg
                 class="w-5 h-5"
@@ -568,7 +633,33 @@ export default {
             v-for="student in family?.attributes?.Students.data"
             class="flex justify-between items-center w-full"
           >
-            <span class="truncate w-3/5">{{ student.attributes.Name }}</span>
+            <div class="w-3/5 flex items-center gap-2">
+              <span
+                v-if="Number(student.attributes.DelayedPayments) > 0"
+                class="w-8 group p-2 bg-amber-400 rounded text-white relative flex justify-center items-center"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+                  />
+                </svg>
+                <span
+                  class="group-hover:block hidden absolute -top-10 -left-2 bg-slate-800 p-2 text-white rounded w-40"
+                  >Atraso de Meses:
+                  {{ Number(student.attributes.DelayedPayments) }}</span
+                >
+              </span>
+              {{ student.attributes.Name }}
+            </div>
             <img
               v-if="student.attributes.PaymentMethod === 'MBWay'"
               src="../../assets/paymentMethods/mbway.png"
@@ -615,6 +706,11 @@ export default {
               class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900 shrink-0"
               :class="isAdmin ? 'cursor-pointer' : 'cursor-not-allowed'"
               >Pago
+              <span
+                v-if="student.attributes.PaidMonths > 1 || monthsNumber > 1"
+                class="absolute text-xs bg-teal-400 text-white rounded-full p-[2px] -top-2 -right-3"
+                >x{{ monthsNumber > 1 && monthsNumber || student.attributes.PaidMonths }}</span
+              >
             </span>
             <span
               v-if="!student.attributes.Paid && loading !== student.id"

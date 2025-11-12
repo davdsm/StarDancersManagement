@@ -14,7 +14,7 @@ export default {
 <template>
   <aside
     v-if="isAdmin"
-    class="bg-white rounded-lg flex-shrink-0 transition-all duration-300 px-4 py-6 shadow-sm sticky top-10 flex w-[calc(100%-40px)] max-sm:mx-[20px] max-sm:px-14 flex-wrap"
+    class="z-10 bg-white rounded-lg flex-shrink-0 transition-all duration-300 px-4 py-6 shadow-sm sticky top-10 flex w-[calc(100%-40px)] max-sm:mx-[20px] max-sm:px-14 flex-wrap"
     :class="{ 'md:w-16': !open, 'md:w-64': open }"
   >
     <header class="w-full">

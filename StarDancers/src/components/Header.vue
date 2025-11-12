@@ -92,8 +92,8 @@ export default {
   <header
     class="container mx-auto flex justify-between entry pt-20 pb-10 z-20 flex-wrap flex-col gap-12"
   >
-    <div class="flex items-center justify-between w-full z-10">
-      <div class="max-sm:pl-10 max-sm:w-full">
+    <div class="flex items-center justify-between w-full z-10 flex-wrap gap-6 px-6">
+      <div class="order-1 w-1/2 md:w-1/4">
         <h1 class="text-2xl">Olá {{ username }} 👋</h1>
       </div>
 
@@ -101,7 +101,7 @@ export default {
       <div
         v-if="isAdmin"
         id="tooltip"
-        class="w-30 mr-12 max-sm:absolute max-sm:w-full max-sm:text-center max-sm:top-20"
+        class="order-3 md:order-2 text-center w-full md:w-1/4"
       >
         <div
           class="pt-1 text-slate-600 font-bold max-sm:flex max-sm:justify-center max-sm:items-center"
@@ -128,7 +128,7 @@ export default {
 
       <!-- Menu -->
       <div
-        class="flex justify-center flex-col w-auto title max-sm:pr-10 z-12"
+        class="flex justify-center flex-col w-auto title z-12 w-1/3 order-2 md:order-3 md:w-1/4"
         :style="{ alignItems: 'end' }"
       >
         <button

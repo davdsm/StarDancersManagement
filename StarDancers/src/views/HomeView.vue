@@ -55,7 +55,7 @@ export default {
       );
       this.loading = false;
       if (success) {
-        this.showModal = false;
+        // this.showModal = false;
         if (this.query) {
           const _students = await searchStudents(this.query);
           this.students = _students[0];
