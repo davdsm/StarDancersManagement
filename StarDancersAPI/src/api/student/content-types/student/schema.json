@@ -69,6 +69,14 @@
         "Transfer",
         "Money"
       ]
+    },
+    "DelayedPayments": {
+      "type": "integer",
+      "default": 0
+    },
+    "PaidMonths": {
+      "type": "integer",
+      "default": 0
     }
   }
 }
