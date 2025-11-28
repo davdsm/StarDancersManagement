@@ -1,20 +1,18 @@
 <script lang="ts">
 import qs from "qs";
 
-import TableList from "@/components/FamiliesTable/TableList.vue";
-import Modal from "@/components/FamiliesTable/ModalTable.vue";
-
-import { getFamilies } from "@/services/families";
 import { useUserStore } from "@/stores/user";
+import TableList from "@/components/ReportsTable/TableList.vue";
+import { getReports } from "@/services/reports";
 
 export default {
   data() {
     return {
-      families: [],
+      reports: [],
       loading: <any>false,
       query: "",
       showModal: <Boolean>false,
-      family: {},
+      report: {},
       isAdmin: <Boolean>false,
       pagination: <any>{},
       page: <number>1,
@@ -23,7 +21,7 @@ export default {
   },
   methods: {
     async get() {
-      return ([this.families, this.pagination] = await getFamilies(
+      return ([this.reports, this.pagination] = await getReports(
         this.page,
         this.query
       ));
@@ -61,16 +59,19 @@ export default {
       return await this.get();
     },
   },
-  components: { TableList, Modal },
+  components: { TableList },
 
   async beforeMount() {
-    [this.families, this.pagination] = await this.get();
+    [this.reports, this.pagination] = await this.get();
   },
 
   async mounted() {
     const userStore = useUserStore();
     await userStore.fetchUser();
     this.isAdmin = userStore.isAdmin;
+
+    console.log('->...', this.reports);
+    
   },
 };
 </script>
@@ -86,40 +87,16 @@ export default {
         <div class="md:col-span-2">
           <header>
             <h3 class="text-2xl font-medium title max-sm:text-center">
-              Famílias
+              Relatórios
             </h3>
             <p class="text-md pt-2 font-medium subtitle max-sm:text-center">
-              Um total de {{ pagination.total }} famílias. 🧑‍🤝‍🧑
+              Um total de {{ pagination.total }} relatórios. 📁
             </p>
           </header>
         </div>
         <div
           class="md:flex max-sm:pt-10 max-sm:pb-10 justify-end max-sm:justify-start md:grid md:grid-cols-2 gap-2"
         >
-          <div class="max-sm:w-full">
-            <button
-              type="button"
-              class="flex items-center justify-center gap-2 text-white transition w-full rounded bg-teal-600 px-6 py-2.5 cursor-pointer font-medium text-sm mr-2 mb-2"
-              :onclick="() => (showModal = true)"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-6 h-6 shrink-0"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-
-              Adicionar
-            </button>
-          </div>
           <div class="max-sm:w-full">
             <form class="flex items-center" @submit="search">
               <label for="simple-search" class="sr-only">Pesquisa</label>
@@ -176,17 +153,10 @@ export default {
         </div>
       </div>
       <TableList
-        v-if="families.length > 0"
-        :families="families"
+        v-if="reports.length > 0"
+        :reports="reports"
         :loading="loading"
-        :show="(item: any) => ((family = item), (showModal = true))"
-        :student="family"
       />
     </div>
   </div>
-  <modal
-    v-if="showModal"
-    :close="() => ((showModal = false), (family = {}), get())"
-    v-bind:family="family"
-  />
 </template>

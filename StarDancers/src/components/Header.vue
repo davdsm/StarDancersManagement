@@ -92,7 +92,9 @@ export default {
   <header
     class="container mx-auto flex justify-between entry pt-20 pb-10 z-20 flex-wrap flex-col gap-12"
   >
-    <div class="flex items-center justify-between w-full z-10 flex-wrap gap-6 px-6">
+    <div
+      class="flex items-center justify-between w-full z-10 flex-wrap gap-6 px-6"
+    >
       <div class="order-1 w-1/2 md:w-1/4">
         <h1 class="text-2xl">Olá {{ username }} 👋</h1>
       </div>
@@ -132,7 +134,7 @@ export default {
         :style="{ alignItems: 'end' }"
       >
         <button
-          class="flex items-center justify-center w-24 yellow p-3 rounded-lg cursor-pointer"
+          class="group flex items-center justify-center w-24 bg-teal-500 hover:bg-teal-600 p-3 rounded-lg cursor-pointer text-white"
           type="button"
           @click="menu = !menu"
         >
@@ -142,7 +144,7 @@ export default {
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            class="w-6"
+            class="w-6 group-hover:rotate-45 transition-all duration-200 ease-in-out"
           >
             <path
               stroke-linecap="round"
@@ -157,7 +159,8 @@ export default {
           </svg>
 
           <svg
-            class="ml-2 w-4 h-4"
+            class="ml-2 w-4 h-4 transition-all duration-200 ease-in-out"
+            :class="menu ? '-rotate-180' : ''"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

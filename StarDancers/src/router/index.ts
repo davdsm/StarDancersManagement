@@ -3,6 +3,7 @@ import HomeView from "@/views/HomeView.vue";
 import Login from "@/views/LoginView.vue";
 import FamiliesView from "@/views/FamiliesView.vue";
 import NotificationsView from "@/views/NotificationsView.vue";
+import ReportsView from "@/views/ReportsView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,6 +22,11 @@ const router = createRouter({
       path: "/notifications",
       name: "notifications",
       component: NotificationsView,
+    },
+    {
+      path: "/reports",
+      name: "reports",
+      component: ReportsView,
     },
     {
       path: "/login",
