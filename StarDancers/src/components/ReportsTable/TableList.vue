@@ -11,6 +11,37 @@ export default {
       this.local_reports = this.reports;
     },
   },
+  methods: {
+    getFileUrl(item: any) {
+      try {
+        const fileField = item.attributes.File;
+        if (!fileField) return "#";
+
+        // Strapi v4 returns { data: { id, attributes: { url } } } for single media
+        const data = fileField.data;
+        let url = null;
+
+        if (!data) return "#";
+
+        if (Array.isArray(data)) {
+          // take first
+          url = data[0]?.attributes?.url;
+        } else {
+          url = data.attributes?.url;
+        }
+
+        if (!url) return "#";
+
+        // If url is relative, prefix with API address
+        if (url.startsWith("http") || url.startsWith("//")) return url;
+
+        const base = import.meta.env.VITE_ADDRESS || "";
+        return `${base}${url}`;
+      } catch (e) {
+        return "#";
+      }
+    },
+  },
 };
 </script>
 
@@ -44,7 +75,7 @@ export default {
             <div class="flex flex-col">
               <a
                 target="_blank"
-                :href="item.attributes.File"
+                :href="getFileUrl(item)"
                 class="cursor-pointer"
                 >Ver Relatório</a
               >

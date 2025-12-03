@@ -3,16 +3,16 @@ import nodeCron from "node-cron";
 import request from "request";
 import Twilio from "twilio";
 import { getStudents, getTodayBirthdays, resetJobs, sleep } from "./api.js";
+import { main } from "./generate_report.js";
 
 dotenv.config();
 
 const debug = false;
 let errorContacts = [];
 
-
 /*
-* Credentials and on system vars for security reasons
-*/
+ * Credentials and on system vars for security reasons
+ */
 const accountSid = process.env.SMS_ACCOUNT_ID;
 const authToken = process.env.SMS_AUTH_TOKEN;
 
@@ -237,82 +237,86 @@ console.log("🎂 Birthday messages will be sent.");
 console.log("");
 
 const birthdayMessages = async () => {
-
   const debugContacts = [
     {
-    id: 1,
-    attributes: {
-      Name: "David Magalhães",
-      ParentName: "David Magalhães",
-      ParentContact: "912074406",
-      ParentEmail: "geral@davdsm.pt",
-      ParentNIF: "0",
-      Class: "Adultos",
-      Price: 1,
-      Observations: "Nada",
-      ImageRights: true,
-      Paid: false,
-      Week: ["Segunda"],
-      createdAt: "2024-04-09T21:19:59.927Z",
-      updatedAt: "2024-04-09T21:19:59.927Z",
-      publishedAt: "2024-04-09T21:19:59.926Z",
-      BornDate: "1989-10-11",
-    }},{
-    id: 2,
-    attributes: {
-      Name: "Ana Cláudia Oliveira Gonçalves ",
-      ParentName: "Ana Gonçalves ",
-      ParentContact: "912642786",
-      ParentEmail: "goncalvesana2@hotmail.com",
-      ParentNIF: "0",
-      Class: "Adultos",
-      Price: 1,
-      Observations: "Nada",
-      ImageRights: true,
-      Paid: false,
-      Week: ["Segunda"],
-      createdAt: "2024-04-09T21:19:59.927Z",
-      updatedAt: "2024-04-09T21:19:59.927Z",
-      publishedAt: "2024-04-09T21:19:59.926Z",
-      BornDate: "1989-10-11",
+      id: 1,
+      attributes: {
+        Name: "David Magalhães",
+        ParentName: "David Magalhães",
+        ParentContact: "912074406",
+        ParentEmail: "geral@davdsm.pt",
+        ParentNIF: "0",
+        Class: "Adultos",
+        Price: 1,
+        Observations: "Nada",
+        ImageRights: true,
+        Paid: false,
+        Week: ["Segunda"],
+        createdAt: "2024-04-09T21:19:59.927Z",
+        updatedAt: "2024-04-09T21:19:59.927Z",
+        publishedAt: "2024-04-09T21:19:59.926Z",
+        BornDate: "1989-10-11",
+      },
     },
-  }
-  ]
+    {
+      id: 2,
+      attributes: {
+        Name: "Ana Cláudia Oliveira Gonçalves ",
+        ParentName: "Ana Gonçalves ",
+        ParentContact: "912642786",
+        ParentEmail: "goncalvesana2@hotmail.com",
+        ParentNIF: "0",
+        Class: "Adultos",
+        Price: 1,
+        Observations: "Nada",
+        ImageRights: true,
+        Paid: false,
+        Week: ["Segunda"],
+        createdAt: "2024-04-09T21:19:59.927Z",
+        updatedAt: "2024-04-09T21:19:59.927Z",
+        publishedAt: "2024-04-09T21:19:59.926Z",
+        BornDate: "1989-10-11",
+      },
+    },
+  ];
 
   const todaysBirthdays = debug ? debugContacts : await getTodayBirthdays();
   const results = [];
 
-   const text = `${
-        debug ? "teste-" : ""
-      }Feliz aniversário! Que a energia da dança te contagie e faça brilhar!⭐ Com carinho StarDancers`;      
- 
-  for (const birthday of todaysBirthdays) {
+  const text = `${
+    debug ? "teste-" : ""
+  }Feliz aniversário! Que a energia da dança te contagie e faça brilhar!⭐ Com carinho StarDancers`;
 
+  for (const birthday of todaysBirthdays) {
     let phoneNumber = birthday.attributes.ParentContact;
 
-     if (birthday.attributes.ParentContact.indexOf("+") === -1) {
-        phoneNumber = "+351" + birthday.attributes.ParentContact;
-      }
+    if (birthday.attributes.ParentContact.indexOf("+") === -1) {
+      phoneNumber = "+351" + birthday.attributes.ParentContact;
+    }
 
-      const message = client.messages.create(
-        {
-          body: text,
-          messagingServiceSid: "MG23ac2229bf53017625d9c3d9e095b47c",
-          to: phoneNumber,
-        },
-        function (error, message) {
-          if (error) {
-            errorContacts.push(`${phoneNumber}(${birthday.attributes.Name})`);
-            console.log(`There is an error with ${phoneNumber}(${birthday.attributes.Name}).`);
-            console.log(`${error}, ${message}`);
-          }
+    const message = client.messages.create(
+      {
+        body: text,
+        messagingServiceSid: "MG23ac2229bf53017625d9c3d9e095b47c",
+        to: phoneNumber,
+      },
+      function (error, message) {
+        if (error) {
+          errorContacts.push(`${phoneNumber}(${birthday.attributes.Name})`);
+          console.log(
+            `There is an error with ${phoneNumber}(${birthday.attributes.Name}).`
+          );
+          console.log(`${error}, ${message}`);
         }
-      );
+      }
+    );
 
-      console.log(`✅ Sent Happy Birthday to to ${phoneNumber} | ${birthday.attributes.Name}}`);
-      results.push({ number: phoneNumber, sid: message.sid, status: "sent" });
+    console.log(
+      `✅ Sent Happy Birthday to to ${phoneNumber} | ${birthday.attributes.Name}}`
+    );
+    results.push({ number: phoneNumber, sid: message.sid, status: "sent" });
   }
-}
+};
 
 // Correr o script - 01 00 18 8 * * -> Dia 8 de cada mês às 18h00
 nodeCron.schedule(day8th, async () => {
@@ -325,6 +329,7 @@ nodeCron.schedule(day8th, async () => {
 nodeCron.schedule(
   day1st, // 1st Every Month at 9am
   async () => {
+    await main(); // generate report before reseting jobs
     await resetJobs();
     console.log("👪 Everyone Reseted");
   }

@@ -17,6 +17,7 @@ export const getReports = async (page: number, filters: any = {}) => {
     publicationState: "live",
     sort: ["id:desc"],
     pagination: { page, pageSize: 25 },
+    populate: { File: true },
   });
 
   const url = `${import.meta.env.VITE_ADDRESS}/api/reports?${query}`;
