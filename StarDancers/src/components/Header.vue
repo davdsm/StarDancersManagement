@@ -83,7 +83,7 @@ export default {
     // notifications
     this.notifications = await getNotifications(
       family?.attributes.Name ?? "",
-      Array.from(classes)
+      Array.from(classes) as string[]
     );
   },
   methods: {
