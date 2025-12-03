@@ -7,11 +7,15 @@ export default {
 <template>
   <div class="flex flex-col items-center max-w-full">
     <!-- Help text -->
-    <span class="mt-10 text-sm text-gray-700 mb-4">
+    <span class="mt-10 text-sm text-gray-700 mb-4 dark:text-gray-300">
       A mostrar
-      <span class="font-semibold text-gray-900">{{ pagination.pageSize }}</span>
+      <span class="font-semibold text-gray-900 dark:text-white">{{
+        pagination.pageSize
+      }}</span>
       de
-      <span class="font-semibold text-gray-900">{{ pagination.total }}</span>
+      <span class="font-semibold text-gray-900 dark:text-white">{{
+        pagination.total
+      }}</span>
       Resultados
     </span>
 
@@ -43,14 +47,14 @@ export default {
         <li v-for="i in pagination.pageCount" :key="i">
           <a
             v-if="page === i"
-            class="px-3 py-2 leading-tight text-black font-bold"
+            class="px-3 py-2 leading-tight text-black font-bold dark:text-white"
             >{{ i }}</a
           >
           <a
             v-if="page !== i"
             href=""
             @click="(e:any) => handlePagination(e, i)"
-            class="px-3 py-2 leading-tight hover:text-gray-400"
+            class="px-3 py-2 leading-tight hover:text-gray-400 dark:text-gray-400 dark:hover:text-white"
             >{{ i }}</a
           >
         </li>
@@ -59,7 +63,7 @@ export default {
             v-if="page !== pagination.pageCount"
             @click="(e:any) => handlePagination(e, page + 1)"
             href=""
-            class="block px-3 py-2 leading-tight text-gray-500"
+            class="block px-3 py-2 leading-tight text-gray-500 dark:text-gray-400"
           >
             <span class="sr-only">Next</span>
             <svg

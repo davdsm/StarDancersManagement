@@ -13,7 +13,7 @@ export default {
 <template>
   <div
     id="dropdown"
-    class="sm:absolute top-16 z-12 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700"
+    class="sm:absolute top-16 z-12 w-44 bg-white rounded divide-y divide-gray-100 dark:bg-slate-800 dark:divide-slate-700"
   >
     <ul
       class="text-left py-1 text-sm text-gray-700 dark:text-gray-200"
@@ -23,7 +23,7 @@ export default {
         <a
           :href="link"
           target="_blank"
-          class="text-left w-full block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600"
+          class="text-left w-full block py-2 px-4 hover:bg-gray-100 dark:hover:bg-slate-700"
         >
           Política de Privacidade
         </a>
@@ -31,7 +31,7 @@ export default {
       <li>
         <button
           @click="() => openPassword()"
-          class="text-left w-full block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600"
+          class="text-left w-full block py-2 px-4 hover:bg-gray-100 dark:hover:bg-slate-700"
         >
           Mudar Password
         </button>
@@ -39,7 +39,7 @@ export default {
       <li>
         <button
           @click="() => logout()"
-          class="text-left w-full block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600"
+          class="text-left w-full block py-2 px-4 hover:bg-gray-100 dark:hover:bg-slate-700"
         >
           Sair
         </button>

@@ -30,9 +30,8 @@ export const getFamilies = async (
     { encodeValuesOnly: true }
   );
 
-  const url = `${import.meta.env.VITE_ADDRESS}/api/families?${query}${
-    filters ? `&${filters}` : ""
-  }`;
+  const url = `${import.meta.env.VITE_ADDRESS}/api/families?${query}${filters ? `&${filters}` : ""
+    }`;
 
   const { data } = await axios.get(url, headers);
 
@@ -48,9 +47,7 @@ export const getFamilies = async (
 export const updateFamily = async (
   id: number,
   name: string,
-  email: string,
   studentsIds?: number[],
-  password?: string
 ) => {
   const url = `${import.meta.env.VITE_ADDRESS}/api/families/${id}`;
   const { data } = await axios.put(
@@ -58,26 +55,17 @@ export const updateFamily = async (
     {
       data: {
         Name: name,
-        Email: email,
         Students: studentsIds,
-        ...(password && { Password: password }),
       },
     },
     headers
   );
-
-  if (password) {
-    await updateUserPassword(email, password);
-  }
-
   return data;
 };
 
 export const createFamily = async (
   name: string,
-  email: string,
   studentsIds: number[],
-  password: string
 ) => {
   const url = `${import.meta.env.VITE_ADDRESS}/api/families`;
 
@@ -86,16 +74,11 @@ export const createFamily = async (
     {
       data: {
         Name: name,
-        Email: email,
         Students: studentsIds,
-        ...(password && { Password: password }),
       },
     },
     headers
   );
-
-  // also create user
-  await createUser(email, password);
 
   return data;
 };
@@ -103,17 +86,13 @@ export const createFamily = async (
 /**
  * Delete a family record in Strapi and the associated user
  * @param id - Family ID
- * @param email - Family email (used as username in users-permissions)
  * @returns Strapi delete response
  */
-export const deleteFamily = async (id: number, email: string) => {
+export const deleteFamily = async (id: number) => {
   const url = `${import.meta.env.VITE_ADDRESS}/api/families/${id}`;
 
   // delete family in Strapi
   const { data } = await axios.delete(url, headers);
-
-  // delete linked user
-  await deleteUser(email);
 
   return data;
 };
@@ -160,7 +139,17 @@ export const searchFamilies = async (word: string) => {
       .catch((response) => {
         return response.response ? response.response.status : 500;
       });
-  } else {
-    return getFamilies(1);
   }
+};
+
+export const getFamilyById = async (id: number) => {
+  const query = qs.stringify(
+    {
+      populate: { Students: "*" },
+    },
+    { encodeValuesOnly: true }
+  );
+  const url = `${import.meta.env.VITE_ADDRESS}/api/families/${id}?${query}`;
+  const { data } = await axios.get(url, headers);
+  return data.data;
 };

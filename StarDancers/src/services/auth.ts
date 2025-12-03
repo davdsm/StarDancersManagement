@@ -14,7 +14,7 @@ export const doLogin = async (username: String, password: String) => {
       identifier: username,
       password: password,
     })
-    .then((response) => {      
+    .then((response) => {
       createCookie("user", response.data.user.username);
       createCookie("token", response.data.jwt);
       const user = useUserStore();
@@ -92,9 +92,8 @@ export const createUser = async (email: string, password: string) => {
 };
 
 export const updateUserPassword = async (email: string, password: string) => {
-  const usersUrl = `${
-    import.meta.env.VITE_ADDRESS
-  }/api/users?filters[email][$eq]=${email}`;
+  const usersUrl = `${import.meta.env.VITE_ADDRESS
+    }/api/users?filters[email][$eq]=${email}`;
   const { data: users } = await axios.get(usersUrl, headers);
 
   if (users.length > 0) {

@@ -1,6 +1,7 @@
 import { useUserStore } from "@/stores/user";
 import axios from "axios";
 import qs from "qs";
+import { deleteUser } from "./auth";
 
 const headers = {
   headers: {
@@ -21,8 +22,7 @@ export const getBirthdays = async () => {
 
   return axios
     .get(
-      `${
-        import.meta.env.VITE_ADDRESS
+      `${import.meta.env.VITE_ADDRESS
       }/api/students?filters[BornDate][$endsWith]=${filters}`,
       headers
     )
@@ -49,8 +49,7 @@ export const getStudents = async (
 
     return axios
       .get(
-        `${
-          import.meta.env.VITE_ADDRESS
+        `${import.meta.env.VITE_ADDRESS
         }/api/students?publicationState=live&pagination[page]=${page}&sort=id:desc${filters}`,
         headers
       )
@@ -114,7 +113,11 @@ export const setStudent = async (
     });
 };
 
-export const removeStudent = async (id: number) => {
+export const removeStudent = async (id: number, email: string) => {
+
+  // delete linked user
+  await deleteUser(email);
+
   return axios
     .delete(`${import.meta.env.VITE_ADDRESS}/api/students/${id}`, headers)
     .then(() => {

@@ -71,8 +71,6 @@
 
 body {
   min-height: 100vh;
-  color: var(--color-text);
-  background: var(--color-background);
   transition: color 0.5s, background-color 0.5s;
   line-height: 1.6;
   font-family: "Poppins", sans-serif;
@@ -112,22 +110,26 @@ body {
   animation-fill-mode: forwards;
   animation-timing-function: cubic-bezier(0.785, 0.135, 0.15, 0.86);
 }
+
 .delay {
   animation-delay: 0.1s;
 }
+
 table tr:nth-child(even) {
   background-color: rgb(249 250 251);
 }
+
 .ellipsis {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-#tooltip > div > div {
+#tooltip>div>div {
   display: none;
 }
-#tooltip:hover > div > div {
+
+#tooltip:hover>div>div {
   display: inline-block;
 }
 
@@ -147,7 +149,8 @@ table tr:nth-child(even) {
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 0 0% 96.1%;
+    /* #f5f5f5 */
     --foreground: 20 14.3% 4.1%;
     --card: 0 0% 100%;
     --card-foreground: 20 14.3% 4.1%;
@@ -181,36 +184,48 @@ table tr:nth-child(even) {
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
   .dark {
-    --background: 20 14.3% 4.1%;
-    --foreground: 60 9.1% 97.8%;
-    --card: 20 14.3% 4.1%;
-    --card-foreground: 60 9.1% 97.8%;
-    --popover: 20 14.3% 4.1%;
-    --popover-foreground: 60 9.1% 97.8%;
+    --color-background: hsl(var(--background));
+    --color-text: hsl(var(--foreground));
+    --background: 222.9 31.8% 17.3%;
+    --foreground: 0 0% 100%;
+    --card: 222.9 38.9% 14.1%;
+    --card-foreground: 0 0% 100%;
+    --popover: 222.9 38.9% 14.1%;
+    --popover-foreground: 0 0% 100%;
     --primary: 60 9.1% 97.8%;
     --primary-foreground: 24 9.8% 10%;
-    --secondary: 12 6.5% 15.1%;
-    --secondary-foreground: 60 9.1% 97.8%;
-    --muted: 12 6.5% 15.1%;
-    --muted-foreground: 24 5.4% 63.9%;
-    --accent: 12 6.5% 15.1%;
-    --accent-foreground: 60 9.1% 97.8%;
+    --secondary: 217.2 32.6% 17.5%;
+    /* Slate 800 */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 217.2 32.6% 17.5%;
+    /* Slate 800 */
+    --muted-foreground: 215 20.2% 65.1%;
+    /* Slate 400 */
+    --accent: 217.2 32.6% 17.5%;
+    /* Slate 800 */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 60 9.1% 97.8%;
-    --border: 12 6.5% 15.1%;
-    --input: 12 6.5% 15.1%;
-    --ring: 24 5.7% 82.9%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 217.2 32.6% 17.5%;
+    /* Slate 800 */
+    --input: 217.2 32.6% 17.5%;
+    /* Slate 800 */
+    --ring: 212.7 26.8% 83.9%;
+    /* Slate 300 */
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-background: 222.9 38.9% 14.1%;
+    --sidebar-foreground: 215 20.2% 65.1%;
+    /* Slate 400 */
     --sidebar-primary: 224.3 76.3% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
+    /* Slate 800 */
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
@@ -223,7 +238,13 @@ table tr:nth-child(even) {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+img {
+  border-radius: 5px;
+  ;
 }

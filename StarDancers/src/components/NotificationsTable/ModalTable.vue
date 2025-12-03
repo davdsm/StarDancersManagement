@@ -167,14 +167,18 @@ export default {
       class="mt-5 fixed md:relative md:w-1/5 max-w-2xl h-full md:z-50 -top-2 md:top-0 z-[90] w-5/6"
     >
       <div
-        class="relative bg-white rounded-lg shadow overflow-y-auto overflow-x-hidden h-4/5"
+        class="relative bg-white rounded-lg overflow-y-auto overflow-x-hidden h-4/5 dark:bg-slate-800"
       >
         <!-- Modal Header -->
-        <div class="flex justify-between items-center p-4 rounded-t border-b">
-          <h3 class="text-xl font-semibold text-gray-900">Famílias</h3>
+        <div
+          class="flex justify-between items-center p-4 rounded-t border-b dark:border-slate-700"
+        >
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+            Famílias
+          </h3>
           <button
             type="button"
-            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex items-center"
+            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex items-center dark:hover:bg-slate-700 dark:hover:text-white"
             @click="handleFamiliesSidebar"
           >
             <svg
@@ -198,17 +202,19 @@ export default {
               type="search"
               v-model="searchField"
               placeholder="Procurar..."
-              class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
+              class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-slate-700 dark:border-slate-600 dark:placeholder-gray-400 dark:text-white"
             />
             <button type="submit" class="hidden"></button>
           </form>
 
           <div>
-            <div class="relative flex flex-col rounded-xl bg-white shadow">
+            <div
+              class="relative flex flex-col rounded-xl bg-white dark:bg-slate-800"
+            >
               <nav class="flex min-w-[240px] flex-col gap-1 p-2">
                 <div
                   v-for="fam in familyList"
-                  class="flex w-full items-center rounded-lg p-0 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
+                  class="flex w-full items-center rounded-lg p-0 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100 dark:hover:bg-slate-700 dark:focus:bg-slate-700 dark:active:bg-slate-700"
                 >
                   <label
                     :for="`fam-${fam.id}`"
@@ -250,7 +256,7 @@ export default {
                         </span>
                       </label>
                       <label
-                        class="cursor-pointer ml-2 text-slate-600 text-sm"
+                        class="cursor-pointer ml-2 text-slate-600 text-sm dark:text-gray-300"
                         for="check-vertical-list-group"
                       >
                         {{ fam.attributes.Name }}
@@ -294,11 +300,15 @@ export default {
       <form
         action="#"
         @submit="(e:any) => create(e)"
-        class="relative bg-white rounded-lg shadow"
+        class="relative bg-white rounded-lg dark:bg-slate-800"
       >
         <!-- Modal header -->
-        <div class="flex justify-between items-center p-4 rounded-t border-b">
-          <h3 class="text-xl font-semibold text-gray-900">Editar {{ name }}</h3>
+        <div
+          class="flex justify-between items-center p-4 rounded-t border-b dark:border-slate-700"
+        >
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+            Editar {{ name }}
+          </h3>
           <span
             v-if="errorMsg"
             class="w-1/2 text-center text-red-500 text-xs font-bold ml-auto"
@@ -306,7 +316,7 @@ export default {
           >
           <button
             type="button"
-            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex items-center"
+            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex items-center dark:hover:bg-slate-700 dark:hover:text-white"
             @click="() => close()"
           >
             <svg
@@ -329,14 +339,14 @@ export default {
             <div class="col-span-6 sm:col-span-2">
               <label
                 for="notification-title"
-                class="block mb-2 text-sm font-medium text-gray-900"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >Título</label
               >
               <input
                 type="text"
                 name="notification-title"
                 id="notification-title"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-slate-700 dark:border-slate-600 dark:placeholder-gray-400 dark:text-white"
                 :placeholder="local_notification.attributes.Title"
                 v-model="local_notification.attributes.Title"
                 required
@@ -345,13 +355,13 @@ export default {
             <div class="col-span-6 sm:col-span-4 relative">
               <label
                 for="notification-title"
-                class="block mb-2 text-sm font-medium text-gray-900"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >Quem?</label
               >
               <button
                 id="dropdownTarget"
                 data-dropdown-toggle="target"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 flex w-2/3 p-2.5 justify-between items-center"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 flex w-2/3 p-2.5 justify-between items-center dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                 type="button"
                 @click="closeDropdowns(), (openTarget = !openTarget)"
               >
@@ -375,17 +385,17 @@ export default {
 
               <div
                 id="dropdown"
-                class="absolute z-10 bg-gray-50 border border-gray-300 divide-y divide-gray-100 rounded-lg shadow-sm w-2/3 mt-4"
+                class="absolute z-10 bg-gray-50 border border-gray-300 divide-y divide-gray-100 rounded-lg w-2/3 mt-4 dark:bg-slate-700 dark:border-slate-600"
                 v-if="openTarget"
               >
                 <ul
-                  class="py-2 text-gray-900 text-sm"
+                  class="py-2 text-gray-900 text-sm dark:text-white"
                   aria-labelledby="dropdownDefaultButton"
                 >
                   <li>
                     <button
                       type="button"
-                      class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                      class="block px-4 py-2 hover:bg-gray-100 w-full text-left dark:hover:bg-slate-600"
                       @click="
                         (local_notification.attributes.Target = 'Todos'),
                           closeDropdowns()
@@ -402,7 +412,7 @@ export default {
                   <li>
                     <button
                       type="button"
-                      class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                      class="block px-4 py-2 hover:bg-gray-100 w-full text-left dark:hover:bg-slate-600"
                       @click="
                         (local_notification.attributes.Target = 'Turma'),
                           closeDropdowns()
@@ -419,7 +429,7 @@ export default {
                   <li>
                     <button
                       type="button"
-                      class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                      class="block px-4 py-2 hover:bg-gray-100 w-full text-left dark:hover:bg-slate-600"
                       @click="
                         (local_notification.attributes.Target = 'Família'),
                           closeDropdowns()
@@ -442,14 +452,14 @@ export default {
             >
               <label
                 for="notification-title"
-                class="block mb-2 text-sm font-medium text-gray-900"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >Turma</label
               >
               <input
                 type="text"
                 name="notification-turma"
                 id="notification-turma"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-slate-700 dark:border-slate-600 dark:placeholder-gray-400 dark:text-white"
                 :placeholder="local_notification.attributes.Turma"
                 v-model="local_notification.attributes.Turma"
                 required
@@ -461,7 +471,7 @@ export default {
             >
               <label
                 for="notification-title"
-                class="block mb-2 text-sm font-medium text-gray-900"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >Família</label
               >
               <div class="col-span-6 sm:col-span-3 w-full flex flex-wrap gap-2">
@@ -513,13 +523,13 @@ export default {
             <div class="col-span-6 sm:col-span-3 relative">
               <label
                 for="notification-title"
-                class="block mb-2 text-sm font-medium text-gray-900"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >Tipo de Notificação</label
               >
               <button
                 id="dropdownTarget"
                 data-dropdown-toggle="target"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 flex w-full p-2.5 justify-between items-center"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 flex w-full p-2.5 justify-between items-center dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                 type="button"
                 @click="closeDropdowns(), (openType = !openType)"
               >
@@ -544,17 +554,17 @@ export default {
               <!-- Dropdown menu -->
               <div
                 id="dropdown"
-                class="absolute z-10 bg-gray-50 border border-gray-300 divide-y divide-gray-100 rounded-lg shadow-sm w-full mt-4"
+                class="absolute z-10 bg-gray-50 border border-gray-300 divide-y divide-gray-100 rounded-lg w-full mt-4 dark:bg-slate-700 dark:border-slate-600"
                 v-if="openType"
               >
                 <ul
-                  class="py-2 text-gray-900 text-sm"
+                  class="py-2 text-gray-900 text-sm dark:text-white"
                   aria-labelledby="dropdownDefaultButton"
                 >
                   <li>
                     <button
                       type="button"
-                      class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                      class="block px-4 py-2 hover:bg-gray-100 w-full text-left dark:hover:bg-slate-600"
                       @click="
                         (local_notification.attributes.Type = 'Aviso'),
                           closeDropdowns()
@@ -571,7 +581,7 @@ export default {
                   <li>
                     <button
                       type="button"
-                      class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                      class="block px-4 py-2 hover:bg-gray-100 w-full text-left dark:hover:bg-slate-600"
                       @click="
                         (local_notification.attributes.Type = 'Erro'),
                           closeDropdowns()
@@ -588,7 +598,7 @@ export default {
                   <li>
                     <button
                       type="button"
-                      class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                      class="block px-4 py-2 hover:bg-gray-100 w-full text-left dark:hover:bg-slate-600"
                       @click="
                         (local_notification.attributes.Type = 'Sucesso'),
                           closeDropdowns()
@@ -605,7 +615,7 @@ export default {
                   <li>
                     <button
                       type="button"
-                      class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                      class="block px-4 py-2 hover:bg-gray-100 w-full text-left dark:hover:bg-slate-600"
                       @click="
                         (local_notification.attributes.Type = 'Informação'),
                           closeDropdowns()
@@ -625,13 +635,13 @@ export default {
             <div class="col-span-6 sm:col-span-2">
               <label
                 for="notification-title"
-                class="block mb-2 text-sm font-medium text-gray-900"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >Estado</label
               >
               <button
                 id="dropdownTarget"
                 data-dropdown-toggle="target"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 flex w-5/6 p-2.5 justify-between items-center"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 flex w-5/6 p-2.5 justify-between items-center dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                 type="button"
                 @click="closeDropdowns(), (openActive = !openActive)"
               >
@@ -658,17 +668,17 @@ export default {
               <!-- Dropdown menu -->
               <div
                 id="dropdown"
-                class="absolute z-10 bg-gray-50 border border-gray-300 divide-y divide-gray-100 rounded-lg shadow-sm w-full mt-4"
+                class="absolute z-10 bg-gray-50 border border-gray-300 divide-y divide-gray-100 rounded-lg w-full mt-4 dark:bg-slate-700 dark:border-slate-600"
                 v-if="openActive"
               >
                 <ul
-                  class="py-2 text-gray-900 text-sm"
+                  class="py-2 text-gray-900 text-sm dark:text-white"
                   aria-labelledby="dropdownDefaultButton"
                 >
                   <li>
                     <button
                       type="button"
-                      class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                      class="block px-4 py-2 hover:bg-gray-100 w-full text-left dark:hover:bg-slate-600"
                       @click="
                         (local_notification.attributes.Active = true),
                           closeDropdowns()
@@ -683,7 +693,7 @@ export default {
                   <li>
                     <button
                       type="button"
-                      class="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                      class="block px-4 py-2 hover:bg-gray-100 w-full text-left dark:hover:bg-slate-600"
                       @click="
                         (local_notification.attributes.Active = false),
                           closeDropdowns()
@@ -701,14 +711,14 @@ export default {
             <div class="col-span-6 sm:col-span-6">
               <label
                 for="notification-title"
-                class="block mb-2 text-sm font-medium text-gray-900"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >Mensagem</label
               >
               <textarea
                 v-model="local_notification.attributes.Message"
                 rows="7"
                 :placeholder="local_notification.attributes.Message"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 flex w-5/6 p-2.5 justify-between items-center"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 flex w-5/6 p-2.5 justify-between items-center dark:bg-slate-700 dark:border-slate-600 dark:placeholder-gray-400 dark:text-white"
               ></textarea>
             </div>
           </div>
@@ -718,7 +728,7 @@ export default {
 
         <!-- Modal footer -->
         <div
-          class="flex items-center justify-between p-6 space-x-2 rounded-b border-t border-gray-200"
+          class="flex items-center justify-between p-6 space-x-2 rounded-b border-t border-gray-200 dark:border-slate-700"
         >
           <button
             type="submit"

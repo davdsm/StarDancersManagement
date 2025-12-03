@@ -16,13 +16,14 @@ export default {
 };
 </script>
 
-<template class="bg-slate-100">
+<template class="bg-slate-100 dark:bg-transparent">
   <div class="pt-10 md:pr-16 md:pl-16 overflow-x-auto relative sm:rounded-lg">
-    <table class="w-full text-sm text-left text-gray-500">
-      <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+    <table class="w-full text-sm text-left text-gray-500 dark:text-white">
+      <thead
+        class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-[#161e32] dark:text-white"
+      >
         <tr>
           <th scope="col" class="w-40 py-3 px-6 font-medium">Família</th>
-          <th scope="col" class="w-40 py-3 px-6">Email</th>
           <th scope="col" class="w-20 py-3 px-6">Alunos</th>
           <th scope="col" class="w-20 py-3 px-6">Gerir</th>
         </tr>
@@ -31,26 +32,23 @@ export default {
         <tr
           v-for="item in local_families"
           :key="item.id"
-          class="bg-white border-b hover:bg-gray-50"
+          class="bg-white border-b hover:bg-gray-50 dark:bg-[#161e32] dark:border-slate-700 dark:hover:bg-slate-700"
         >
           <th
             scope="row"
-            class="py-4 px-6 font-medium title whitespace-nowrap cursor-pointer"
+            class="py-4 px-6 font-medium title whitespace-nowrap cursor-pointer dark:text-white"
             @click="() => show(item)"
           >
             Família {{ item.attributes.Name }}
           </th>
-          <td class="py-4 px-6 py-4 px-6 font-medium title whitespace-nowrap">
-            <div class="flex flex-col">
-              {{ item.attributes.Email }}
-            </div>
-          </td>
-          <td class="py-4 px-6 py-4 px-6 font-medium title whitespace-nowrap">
+          <td
+            class="py-4 px-6 py-4 px-6 font-medium title whitespace-nowrap dark:text-white"
+          >
             <div class="flex flex-col">
               {{ item.attributes.Students.data.length }} Alunos
             </div>
           </td>
-          <td class="py-4 px-6 flex justify-start">
+          <td class="py-4 px-6 flex justify-start dark:text-white">
             <button @click="() => show(item)" class="">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

@@ -42,11 +42,11 @@ export default {
     >
       <div class="relative w-full max-w-md h-full md:h-auto">
         <!-- Modal content -->
-        <div class="relative bg-white rounded-lg shadow">
+        <div class="relative bg-white rounded-lg dark:bg-slate-800">
           <button
             type="button"
             @click="() => close()"
-            class="z-30 pointer absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+            class="z-30 pointer absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-slate-700 dark:hover:text-white"
             data-modal-toggle="authentication-modal"
           >
             <svg
@@ -65,14 +65,14 @@ export default {
             <span class="sr-only">Fechar Modal</span>
           </button>
           <div class="py-6 px-6 lg:px-8">
-            <h3 class="mb-4 text-xl font-medium text-gray-900">
+            <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">
               Mudar Password
             </h3>
             <form class="space-y-6" action="#" @submit="submit">
               <div>
                 <label
                   for="new-password"
-                  class="block mb-2 text-sm font-medium text-gray-900"
+                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >Nova Password</label
                 >
                 <input
@@ -80,7 +80,7 @@ export default {
                   name="new-password"
                   v-model="new_password"
                   id="new-password"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-slate-700 dark:border-slate-600 dark:placeholder-gray-400 dark:text-white"
                   required
                 />
                 <p v-if="error.id === 2" class="mt-2 text-sm text-red-600">
@@ -90,7 +90,7 @@ export default {
               <div>
                 <label
                   for="r-password"
-                  class="block mb-2 text-sm font-medium text-gray-900"
+                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >Repetir Nova Password</label
                 >
                 <input
@@ -98,7 +98,7 @@ export default {
                   name="r-password"
                   v-model="repeat_password"
                   id="r-password"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-slate-700 dark:border-slate-600 dark:placeholder-gray-400 dark:text-white"
                   required
                 />
                 <p v-if="error.id === 1" class="mt-2 text-sm text-red-600">

@@ -4,6 +4,7 @@ import { useRoute } from "vue-router";
 import Header from "./components/Header.vue";
 import Sidebar from "./components/Sidebar.vue";
 import { useUserStore } from "@/stores/user"; // Adjust the path if needed
+import { useThemeStore } from "@/stores/theme";
 
 const userStore = useUserStore();
 const route = useRoute();
@@ -12,7 +13,10 @@ const isAdmin = computed(() => userStore.isAdmin);
 const showHeader = computed(() => route.path !== "/login");
 
 onMounted(async () => {
-  if (userStore.user) {    
+  const themeStore = useThemeStore();
+  themeStore.initTheme();
+
+  if (userStore.user) {
     await userStore.fetchUser();
   }
 });

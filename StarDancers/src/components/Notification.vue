@@ -38,14 +38,16 @@ export default defineComponent({
   <dialog
     open="true"
     :class="[
-      'z-04 w-4/5 md:w-2/3 mx-auto p-8 rounded-xl shadow-xl relative flex flex-col justify-between gap-3 max-w-3xl md:mb-0',
+      'z-04 w-4/5 md:w-2/3 mx-auto p-8 rounded-xl relative flex flex-col justify-between gap-3 max-w-3xl md:mb-0',
       `bg-${colors[design]}-600`,
     ]"
   >
     <h2
       class="gap-2 justify-between w-full flex justify-items-center items-center"
     >
-      <span class="text-md md:text-2xl text-white flex font-bold items-center gap-2">
+      <span
+        class="text-md md:text-2xl text-white flex font-bold items-center gap-2"
+      >
         <!-- success -->
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -34,7 +34,7 @@ export default {
           DelayedPayments: 0,
           PaidMonths: this.monthsNumber - delayedPayments,
         });
-      } else if( this.monthsNumber <= delayedPayments) {
+      } else if (this.monthsNumber <= delayedPayments) {
         this.update(itemId, {
           DelayedPayments: delayedPayments - this.monthsNumber,
           PaidMonths: 0,
@@ -57,10 +57,12 @@ export default {
 };
 </script>
 
-<template class="bg-slate-100">
+<template class="bg-slate-100 dark:bg-transparent">
   <div class="pt-10 md:px-4 overflow-x-auto relative sm:rounded-lg">
-    <table class="w-full text-sm text-left text-gray-500">
-      <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+    <table class="w-full text-sm text-left text-gray-500 dark:text-white">
+      <thead
+        class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-[#161e32] dark:text-white"
+      >
         <tr>
           <th scope="col" class="w-40 py-3 px-6 font-medium">Alun@</th>
           <th scope="col" class="w-40 py-3 px-6">Responsável</th>
@@ -73,11 +75,11 @@ export default {
         <tr
           v-for="item in local_students"
           :key="item.id"
-          class="bg-white border-b hover:bg-gray-50 relative"
+          class="bg-white border-b hover:bg-gray-50 relative dark:bg-[#161e32] dark:border-slate-700 dark:hover:bg-slate-700"
         >
           <td
             scope="row"
-            class="py-4 px-6 font-medium title whitespace-nowrap cursor-pointer"
+            class="py-4 px-6 font-medium title whitespace-nowrap cursor-pointer dark:text-white"
             @click="() => show(item)"
           >
             <div class="flex justify-left items-center gap-2">
@@ -108,21 +110,25 @@ export default {
               {{ item.attributes.Name }}
             </div>
           </td>
-          <td class="py-4 px-6 py-4 px-6 font-medium title whitespace-nowrap">
+          <td
+            class="py-4 px-6 py-4 px-6 font-medium title whitespace-nowrap dark:text-white"
+          >
             <div class="flex flex-col">
               {{ item.attributes.ParentName }}
-              <span class="pt-1 text-slate-600">{{
+              <span class="pt-1 text-slate-600 dark:text-gray-400">{{
                 item.attributes.ParentContact
               }}</span>
             </div>
           </td>
-          <td class="py-4 px-6 py-4 px-6 font-medium title whitespace-nowrap">
+          <td
+            class="py-4 px-6 py-4 px-6 font-medium title whitespace-nowrap dark:text-white"
+          >
             <div class="flex flex-col relative">
               {{ item.attributes.Price }}€
-              <span class="pt-1 text-slate-600">Mensal</span>
+              <span class="pt-1 text-slate-600 dark:text-gray-400">Mensal</span>
             </div>
           </td>
-          <td class="py-4 px-6">
+          <td class="py-4 px-6 dark:text-white">
             {{ item.attributes.Class }}
           </td>
           <td

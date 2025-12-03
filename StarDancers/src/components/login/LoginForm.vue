@@ -60,7 +60,7 @@ export default {
         type="text"
         placeholder="Nome de Utilizador"
         required
-        class="mt-0 block w-full px-6 py-4 bg-zinc-50 border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-lime-500"
+        class="mt-0 block w-full px-6 py-4 bg-zinc-50 border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-lime-500 !text-gray-900"
       />
       <div class="relative">
         <button
@@ -110,7 +110,7 @@ export default {
           v-bind:type="showPassword ? 'text' : 'password'"
           required
           placeholder="Password"
-          class="mt-5 mb-6 block w-full px-6 py-4 bg-zinc-50 border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-lime-500"
+          class="mt-5 mb-6 block w-full px-6 py-4 bg-zinc-50 border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-lime-500 !text-gray-900"
         />
       </div>
 

@@ -80,15 +80,19 @@ export default {
     class="flex-1 h-auto transition-all duration-300 rounded-lg mx-[20px] w-[calc(100%-40px)] md:w-4/6 mb-20"
   >
     <div
-      class="entry flex flex-col bg-white pt-12 pb-12 shadow-davdsm rounded-lg delay"
+      class="entry flex flex-col bg-white dark:bg-card pt-12 pb-12 rounded-lg delay"
     >
       <div class="w-full md:grid md:grid-cols-3 gap-3 px-16">
         <div class="md:col-span-2">
           <header>
-            <h3 class="text-2xl font-medium title max-sm:text-center">
+            <h3
+              class="text-2xl font-medium title max-sm:text-center dark:text-white"
+            >
               Famílias
             </h3>
-            <p class="text-md pt-2 font-medium subtitle max-sm:text-center">
+            <p
+              class="text-md pt-2 font-medium subtitle max-sm:text-center dark:text-gray-300"
+            >
               Um total de {{ pagination.total }} famílias. 🧑‍🤝‍🧑
             </p>
           </header>
@@ -129,7 +133,7 @@ export default {
                 >
                   <svg
                     aria-hidden="true"
-                    class="w-5 h-5 text-gray-500"
+                    class="w-5 h-5 text-gray-500 dark:text-gray-400"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                     xmlns="http://www.w3.org/2000/svg"
@@ -145,7 +149,7 @@ export default {
                   type="search"
                   id="simple-search"
                   v-model="searchTerm"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full max-sm:pl-4 md:pl-10 p-2.5"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full max-sm:pl-4 md:pl-10 p-2.5 dark:bg-slate-700 dark:border-slate-600 dark:placeholder-gray-400 dark:text-white"
                   placeholder="Search"
                 />
               </div>

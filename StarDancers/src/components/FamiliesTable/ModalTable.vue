@@ -17,9 +17,7 @@ export type Family = {
   id: number;
   attributes: {
     Name: string;
-    Email: string;
     Students: { data: Student[] };
-    Password: string;
   };
 };
 
@@ -32,22 +30,15 @@ export default {
         id: 0,
         attributes: {
           Name: "",
-          Email: "",
           Students: { data: [] as Student[] },
-          Password: "",
-          RepeatPassword: "",
         },
       } as Family,
       deleteConfirmation: false,
       name: "",
-      email: "",
       students: [] as Student[],
-      password: "",
-      repeatPassword: "",
       that: this,
       errorMsg: "",
       showPassword: false,
-      ShowRepeatPassword: false,
       studentsModal: false,
       searchField: "",
     };
@@ -57,37 +48,23 @@ export default {
       e.preventDefault();
       this.errorMsg = "";
       let success: 200 | string = "";
-      if (this.password !== this.repeatPassword) {
-        this.errorMsg = "As passwords inseridas não são iguais.";
-        return;
-      }
-
       if (this.local_family.id === 0) {
         success = await createFamily(
           this.name,
-          this.email,
-          this.students.map((s) => s.id),
-          this.password
+          this.students.map((s) => s.id)
         );
         this.close();
       } else {
-        if (this.password.length > 0 && this.password.length <= 6) {
-          this.errorMsg = "As password precisam de conter no mínimo 6 digitos.";
-          return;
-        }
-
         success = await updateFamily(
           this.family.id,
           this.name,
-          this.email,
-          this.students.map((s) => s.id),
-          this.password
+          this.students.map((s) => s.id)
         );
         this.close();
       }
     },
     async delete() {
-      await deleteFamily(this.family.id, this.email);
+      await deleteFamily(this.family.id);
       this.close();
     },
     async deleteLocalStudent(id: number) {
@@ -129,7 +106,6 @@ export default {
     if (this.family.hasOwnProperty("id")) {
       this.local_family = this.family;
       this.name = this.family.attributes.Name;
-      this.email = this.family.attributes.Email;
       this.students = this.family.attributes.Students.data;
     }
   },
@@ -149,14 +125,18 @@ export default {
       class="mt-5 fixed md:relative md:w-1/5 max-w-2xl h-full md:z-50 -top-2 md:top-0 z-[90] w-5/6"
     >
       <div
-        class="relative bg-white rounded-lg shadow overflow-y-auto overflow-x-hidden h-4/5"
+        class="relative bg-white rounded-lg overflow-y-auto overflow-x-hidden h-4/5 dark:bg-slate-800"
       >
         <!-- Modal Header -->
-        <div class="flex justify-between items-center p-4 rounded-t border-b">
-          <h3 class="text-xl font-semibold text-gray-900">Alunos</h3>
+        <div
+          class="flex justify-between items-center p-4 rounded-t border-b dark:border-slate-700"
+        >
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+            Alunos
+          </h3>
           <button
             type="button"
-            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex items-center"
+            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex items-center dark:hover:bg-slate-700 dark:hover:text-white"
             @click="handleStudentsSidebar"
           >
             <svg
@@ -180,17 +160,19 @@ export default {
               type="search"
               v-model="searchField"
               placeholder="Procurar..."
-              class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
+              class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-slate-700 dark:border-slate-600 dark:placeholder-gray-400 dark:text-white"
             />
             <button type="submit" class="hidden"></button>
           </form>
 
           <div>
-            <div class="relative flex flex-col rounded-xl bg-white shadow">
+            <div
+              class="relative flex flex-col rounded-xl bg-white dark:bg-slate-800"
+            >
               <nav class="flex min-w-[240px] flex-col gap-1 p-2">
                 <div
                   v-for="student in studentList"
-                  class="flex w-full items-center rounded-lg p-0 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
+                  class="flex w-full items-center rounded-lg p-0 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100 dark:hover:bg-slate-700 dark:focus:bg-slate-700 dark:active:bg-slate-700"
                 >
                   <label
                     :for="`student-${student.id}`"
@@ -232,7 +214,7 @@ export default {
                         </span>
                       </label>
                       <label
-                        class="cursor-pointer ml-2 text-slate-600 text-sm"
+                        class="cursor-pointer ml-2 text-slate-600 text-sm dark:text-white"
                         for="check-vertical-list-group"
                       >
                         {{ student.attributes.Name }}
@@ -275,11 +257,15 @@ export default {
       <form
         action="#"
         @submit="(e:any) => create(e)"
-        class="relative bg-white rounded-lg shadow"
+        class="relative bg-white rounded-lg dark:bg-slate-800"
       >
         <!-- Modal header -->
-        <div class="flex justify-between items-center p-4 rounded-t border-b">
-          <h3 class="text-xl font-semibold text-gray-900">Editar {{ name }}</h3>
+        <div
+          class="flex justify-between items-center p-4 rounded-t border-b dark:border-slate-700"
+        >
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+            Editar {{ name }}
+          </h3>
           <span
             v-if="errorMsg"
             class="w-1/2 text-center text-red-500 text-xs font-bold ml-auto"
@@ -287,7 +273,7 @@ export default {
           >
           <button
             type="button"
-            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex items-center"
+            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex items-center dark:hover:bg-slate-700 dark:hover:text-white"
             @click="() => close()"
           >
             <svg
@@ -310,140 +296,18 @@ export default {
             <div class="col-span-6 sm:col-span-2">
               <label
                 for="family-name"
-                class="block mb-2 text-sm font-medium text-gray-900"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >Nome Família</label
               >
               <input
                 type="text"
                 name="family-name"
                 id="family-name"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-slate-700 dark:border-slate-600 dark:placeholder-gray-400 dark:text-white"
                 :placeholder="name"
                 v-model="name"
                 required
               />
-            </div>
-            <div class="col-span-6 sm:col-span-4">
-              <label
-                for="email"
-                class="block mb-2 text-sm font-medium text-gray-900"
-                >Email Responsável</label
-              >
-              <input
-                type="email"
-                name="email"
-                id="email"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
-                :placeholder="email"
-                v-model="email"
-                required
-              />
-            </div>
-          </div>
-          <div class="grid grid-cols-6 gap-6">
-            <div class="col-span-6 sm:col-span-3">
-              <label
-                for="password"
-                class="block mb-2 text-sm font-medium text-gray-900"
-                >Password</label
-              >
-              <input
-                :type="showPassword ? 'text' : 'password'"
-                name="password"
-                id="password"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
-                placeholder="Password"
-                v-model="password"
-              />
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-5 absolute top-10 right-3 cursor-pointer"
-                @click="showPassword = !showPassword"
-                v-if="!showPassword"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"
-                />
-              </svg>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-5 absolute top-10 right-3 cursor-pointer"
-                @click="showPassword = !showPassword"
-                v-if="showPassword"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                />
-              </svg>
-            </div>
-            <div class="col-span-6 sm:col-span-3">
-              <label
-                for="repeat-password"
-                class="block mb-2 text-sm font-medium text-gray-900"
-                >Repetir Password</label
-              >
-              <input
-                :type="ShowRepeatPassword ? 'text' : 'password'"
-                name="repeat-word"
-                id="repeat-password"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
-                placeholder="Password"
-                v-model="repeatPassword"
-              />
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-5 absolute top-10 right-3 cursor-pointer"
-                @click="ShowRepeatPassword = !ShowRepeatPassword"
-                v-if="!ShowRepeatPassword"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"
-                />
-              </svg>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-5 absolute top-10 right-3 cursor-pointer"
-                @click="ShowRepeatPassword = !ShowRepeatPassword"
-                v-if="ShowRepeatPassword"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                />
-              </svg>
             </div>
           </div>
           <div
@@ -452,7 +316,7 @@ export default {
           >
             <label
               for="students"
-              class="flex mb-2 text-sm font-medium text-neutral-700 w-full gap-2"
+              class="flex mb-2 text-sm font-medium text-neutral-700 w-full gap-2 dark:text-white"
               ><svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -522,7 +386,7 @@ export default {
         </div>
         <!-- Modal footer -->
         <div
-          class="flex items-center justify-between p-6 space-x-2 rounded-b border-t border-gray-200"
+          class="flex items-center justify-between p-6 space-x-2 rounded-b border-t border-gray-200 dark:border-slate-700"
         >
           <button
             type="submit"

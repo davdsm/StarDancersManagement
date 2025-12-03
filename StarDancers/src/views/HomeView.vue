@@ -15,7 +15,7 @@ export default {
   data() {
     return {
       username: "",
-      students: [],
+      students: <any[]>[],
       loading: <any>false,
       query: "",
       showModal: <boolean>false,
@@ -24,6 +24,7 @@ export default {
       page: <number>1,
       pagination: <any>{},
       isAdmin: <boolean>false,
+      family: <any>null,
     };
   },
   methods: {
@@ -31,8 +32,6 @@ export default {
       if (this.isAdmin) {
         if (status === false) this.update(id, { PaidMonths: 1 });
         this.loading = id;
-        console.log("query..", this.query);
-
         [this.students, this.pagination] = await setStudent(
           "Paid",
           status,
@@ -68,9 +67,12 @@ export default {
         return pagination;
       }
     },
-    async delete(id: number) {
+    async delete(id: number, email: string) {
       this.loading = id;
-      [this.students, this.pagination] = await removeStudent(id as number);
+      [this.students, this.pagination] = await removeStudent(
+        id as number,
+        email
+      );
       this.showModal = false;
       this.loading = false;
     },
@@ -133,7 +135,7 @@ export default {
   },
 
   async beforeMount() {
-    [this.students, this.pagination] = await getStudents(this.page, false);
+    // [this.students, this.pagination] = await getStudents(this.page, false);
   },
 
   async mounted() {
@@ -141,25 +143,41 @@ export default {
     const userStore = useUserStore();
     await userStore.fetchUser();
     this.isAdmin = userStore.isAdmin;
+
+    // For non-admin users, get their family information
+    if (!this.isAdmin) {
+      this.family = await userStore.getFamily();
+      this.students = await userStore.getStudents();
+    } else {
+      [this.students, this.pagination] = await getStudents(this.page, false);
+    }
   },
 };
 </script>
 
-<template class="bg-slate-100">
+<template class="">
   <div
     class="flex-1 h-auto transition-all duration-300 rounded-lg mx-[20px] w-[calc(100%-40px)] md:w-4/6"
   >
     <div
-      class="entry flex flex-col bg-white pt-12 pb-12 shadow-davdsm rounded-lg delay"
+      class="entry flex flex-col bg-white dark:bg-card pt-12 pb-12 rounded-lg delay"
       :class="!isAdmin && 'mb-20'"
     >
       <div class="w-full md:grid md:grid-cols-3 gap-3 px-16">
         <div class="md:col-span-2">
           <header>
-            <h3 class="text-2xl font-medium title max-sm:text-center">
-              Alunos
+            <h3
+              class="text-2xl font-medium title max-sm:text-center dark:text-white"
+            >
+              <span v-if="isAdmin">Alunos</span>
+              <span v-else>Meus Alunos</span>
             </h3>
-            <p class="text-md pt-2 font-medium subtitle max-sm:text-center">
+            <p
+              class="text-md pt-2 font-medium subtitle max-sm:text-center dark:text-gray-300"
+            >
+              <span v-if="family && !isAdmin">
+                Família {{ family.attributes.Name }} -
+              </span>
               Um total de
               {{
                 pagination?.hasOwnProperty("total")
@@ -207,7 +225,7 @@ export default {
                 >
                   <svg
                     aria-hidden="true"
-                    class="w-5 h-5 text-gray-500"
+                    class="w-5 h-5 text-gray-500 dark:text-gray-400"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                     xmlns="http://www.w3.org/2000/svg"
@@ -223,7 +241,7 @@ export default {
                   type="search"
                   id="simple-search"
                   v-model="query"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full max-sm:pl-4 md:pl-10 p-2.5"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded block w-full max-sm:pl-4 md:pl-10 p-2.5 dark:bg-slate-700 dark:border-slate-600 dark:placeholder-gray-400 dark:text-white"
                   placeholder="Search"
                 />
               </div>

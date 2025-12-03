@@ -14,7 +14,7 @@ export default {
 <template>
   <aside
     v-if="isAdmin"
-    class="z-10 bg-white rounded-lg flex-shrink-0 transition-all duration-300 px-4 py-6 shadow-sm sticky top-10 flex w-[calc(100%-40px)] max-sm:mx-[20px] max-sm:px-14 flex-wrap"
+    class="z-10 bg-white dark:text-white dark:bg-sidebar rounded-lg flex-shrink-0 transition-all duration-300 px-4 py-6 sticky top-10 flex w-[calc(100%-40px)] max-sm:mx-[20px] max-sm:px-14 flex-wrap border-r dark:border-slate-800"
     :class="{ 'md:w-16': !open, 'md:w-64': open }"
   >
     <header class="w-full">
@@ -30,7 +30,7 @@ export default {
     >
     <nav class="w-full">
       <ul class="max-sm:flex max-sm:space-between w-full justify-between">
-        <li class="mb-2 hover:bg-gray-100 rounded-lg">
+        <li class="mb-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg">
           <router-link
             to="/"
             class="py-4 flex items-center gap-2"
@@ -54,7 +54,7 @@ export default {
             <span v-if="open" class="hidden md:block">Alunos</span>
           </router-link>
         </li>
-        <li class="mb-2 hover:bg-gray-100 rounded-lg">
+        <li class="mb-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg">
           <router-link
             to="/notifications"
             class="py-4 flex items-center gap-2"
@@ -78,7 +78,7 @@ export default {
             <span v-if="open" class="hidden md:block">Notificações</span>
           </router-link>
         </li>
-        <li class="mb-2 hover:bg-gray-100 rounded-lg">
+        <li class="mb-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg">
           <router-link
             to="/families"
             class="py-4 flex items-center gap-2"
@@ -102,7 +102,7 @@ export default {
             <span v-if="open" class="hidden md:block">Famílias</span>
           </router-link>
         </li>
-        <li class="mb-2 hover:bg-gray-100 rounded-lg">
+        <li class="mb-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg">
           <router-link
             to="/reports"
             class="py-4 flex items-center gap-2"
@@ -133,7 +133,7 @@ export default {
     </footer>
     <button
       @click="open = !open"
-      class="hidden md:block absolute top-0 -left-12 p-2 rounded-full bg-white hover:bg-gray-100 transition-colors"
+      class="hidden md:block absolute top-0 -left-12 p-2 rounded-full bg-white dark:bg-sidebar hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

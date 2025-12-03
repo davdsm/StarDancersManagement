@@ -10,8 +10,13 @@ import {
 import { getCookie, removeCookie, updatePassword } from "@/services/auth";
 import { useUserStore } from "@/stores/user";
 import type { Family } from "./FamiliesTable/ModalTable.vue";
+import { useThemeStore } from "@/stores/theme";
 
 export default {
+  setup() {
+    const themeStore = useThemeStore();
+    return { themeStore };
+  },
   data() {
     return {
       password: false as boolean,
@@ -21,6 +26,7 @@ export default {
       notifications: [] as Array<any>,
       isAdmin: false,
       family: <Family>{},
+      students: [] as Array<any>,
       todayDay: new Date().getDate(),
     };
   },
@@ -43,17 +49,35 @@ export default {
     this.isAdmin = user.isAdmin;
     this.family = family as Family;
 
-    this.username = user.isAdmin
-      ? storedUser
-      : `Família ${family?.attributes.Name}`;
-
     // birthdays
     this.birtdays = await getBirthdays();
 
+    // Get students for notifications
+    let students = [];
+    if (this.isAdmin) {
+      const [studentsData] = await getStudents(1, false);
+      students = studentsData;
+    } else {
+      // For non-admin users, get students from user store
+      students = await user.getStudents();
+    }
+
+    // Store students in data
+    this.students = students;
+
+    // Set username based on role and family status
+    if (user.isAdmin) {
+      this.username = storedUser;
+    } else if (family?.attributes.Name) {
+      this.username = `Família ${family.attributes.Name}`;
+    } else if (students.length > 0 && students[0].attributes.ParentName) {
+      this.username = students[0].attributes.ParentName;
+    } else {
+      this.username = storedUser;
+    }
+
     const classes = new Set(
-      family?.attributes.Students.data.map(
-        (student) => student.attributes.Class
-      )
+      students?.map((student: any) => student.attributes.Class) || []
     );
 
     // notifications
@@ -130,9 +154,50 @@ export default {
 
       <!-- Menu -->
       <div
-        class="flex justify-center flex-col w-auto title z-12 w-1/3 order-2 md:order-3 md:w-1/4"
+        class="flex justify-center flex-row w-auto title z-12 w-1/3 order-2 md:order-3 md:w-1/4"
         :style="{ alignItems: 'end' }"
       >
+        <button
+          class="group flex items-center justify-center w-12 h-12 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 p-3 rounded-lg cursor-pointer text-black dark:text-white mr-2 transition-colors duration-200"
+          type="button"
+          @click="themeStore.toggleTheme()"
+          title="Alternar tema"
+        >
+          <!-- Sun Icon (for dark mode) -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            v-if="themeStore.isDark"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-4"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
+            />
+          </svg>
+
+          <!-- Moon Icon (for light mode) -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            v-if="!themeStore.isDark"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-4"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"
+            />
+          </svg>
+        </button>
+
         <button
           class="group flex items-center justify-center w-24 bg-teal-500 hover:bg-teal-600 p-3 rounded-lg cursor-pointer text-white"
           type="button"
@@ -200,9 +265,9 @@ export default {
       <Notification
         v-if="
           !isAdmin &&
-          Object.keys(family).length > 0 &&
+          students.length > 0 &&
           todayDay > 8 &&
-          family.attributes.Students.data.find((stud) => !stud.attributes.Paid)
+          students.find((stud) => !stud.attributes.Paid)
         "
         design="Erro"
         target="Família"
@@ -212,9 +277,9 @@ export default {
       <Notification
         v-if="
           !isAdmin &&
-          Object.keys(family).length > 0 &&
+          students.length > 0 &&
           todayDay === 8 &&
-          family.attributes.Students.data.find((stud) => !stud.attributes.Paid)
+          students.find((stud) => !stud.attributes.Paid)
         "
         design="Aviso"
         target="Família"
