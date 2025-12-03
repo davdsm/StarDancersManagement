@@ -4,7 +4,8 @@
   "info": {
     "singularName": "family",
     "pluralName": "families",
-    "displayName": "Families"
+    "displayName": "Families",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -16,9 +17,6 @@
     },
     "Email": {
       "type": "email"
-    },
-    "Password": {
-      "type": "password"
     },
     "Students": {
       "type": "relation",
