@@ -35,7 +35,7 @@ export default {
       loading: <boolean | number>false,
       openFamily: false,
       showMonths: <boolean>false,
-      monthsNumber: <number>1,
+      monthsNumber: <number>2,
     };
   },
   watch: {
@@ -58,6 +58,9 @@ export default {
       if (typeof success === "string") {
         this.errorMsg = success;
       }
+      if (success === 200) {
+        this.close();
+      }
     },
     async payFamilyStudent(studentId: number, status: boolean) {
       this.loading = studentId;
@@ -65,7 +68,7 @@ export default {
       const fam = await getFamilyByStudentId(this.student.id);
       this.family = fam;
       this.loading = false;
-      if (this.monthsNumber > 1) {
+      if (this.monthsNumber >= 2) {
         this.payMonths(
           studentId,
           this.local_student.attributes.DelayedPayments
@@ -87,6 +90,13 @@ export default {
         this.update(itemId, { PaidMonths: this.monthsNumber });
       }
       this.showMonths = false;
+    },
+    async regularizarSituacao(studentId: number) {
+      this.loading = studentId;
+      await this.update(studentId, { DelayedPayments: 0 });
+      const fam = await getFamilyByStudentId(this.student.id);
+      this.family = fam;
+      this.loading = false;
     },
     async handlePasswordRecovery(password: string, confirmPassword: string) {
       if (password !== confirmPassword) {
@@ -678,8 +688,10 @@ export default {
               <input
                 v-if="showMonths"
                 type="number"
-                placeholder="1"
-                v-model="monthsNumber"
+                min="2"
+                placeholder="2"
+                v-model.number="monthsNumber"
+                @input="monthsNumber = Math.max(2, Number(monthsNumber) || 2)"
                 class="bg-gray-100 pl-5 w-12 rounded p-0"
               />
             </div>
@@ -691,7 +703,7 @@ export default {
               @click="
                 (paymentMethod = undefined),
                   (showMonths = false),
-                  (monthsNumber = 1)
+                  (monthsNumber = 2)
               "
             >
               <svg
@@ -743,68 +755,79 @@ export default {
               </span>
               {{ student.attributes.Name }}
             </div>
-            <img
-              v-if="student.attributes.PaymentMethod === 'MBWay'"
-              src="../../assets/paymentMethods/mbway.png"
-              class="w-4 h-8 object-contain aspect-square"
-            />
-            <img
-              v-if="student.attributes.PaymentMethod === 'Multibanco'"
-              src="../../assets/paymentMethods/multibanco.png"
-              class="w-4 h-8 object-contain aspect-square"
-            />
-            <svg
-              v-if="student.attributes.PaymentMethod === 'Money'"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-4"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"
-              />
-            </svg>
-            <svg
-              v-if="student.attributes.PaymentMethod === 'Transfer'"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-4"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z"
-              />
-            </svg>
-            <span
-              v-if="student.attributes.Paid && loading !== student.id"
-              @click="payFamilyStudent(student.id, false)"
-              class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900 shrink-0"
+            <button
+              v-if="Number(student.attributes.DelayedPayments) > 0 && loading !== student.id"
+              type="button"
+              @click="regularizarSituacao(student.id)"
+              class="text-xs font-semibold px-3 py-1.5 rounded bg-amber-500 hover:bg-amber-600 text-white shrink-0"
               :class="isAdmin ? 'cursor-pointer' : 'cursor-not-allowed'"
-              >Pago
-              <span
-                v-if="student.attributes.PaidMonths > 1 || monthsNumber > 1"
-                class="absolute text-xs bg-teal-400 text-white rounded-full p-[2px] -top-2 -right-3"
-                >x{{
-                  (monthsNumber > 1 && monthsNumber) ||
-                  student.attributes.PaidMonths
-                }}</span
+            >
+              Regularizar Situação
+            </button>
+            <template v-else>
+              <img
+                v-if="student.attributes.PaymentMethod === 'MBWay'"
+                src="../../assets/paymentMethods/mbway.png"
+                class="w-4 h-8 object-contain aspect-square"
+              />
+              <img
+                v-if="student.attributes.PaymentMethod === 'Multibanco'"
+                src="../../assets/paymentMethods/multibanco.png"
+                class="w-4 h-8 object-contain aspect-square"
+              />
+              <svg
+                v-if="student.attributes.PaymentMethod === 'Money'"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4"
               >
-            </span>
-            <span
-              v-if="!student.attributes.Paid && loading !== student.id"
-              @click="payFamilyStudent(student.id, true)"
-              class="bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-red-200 dark:text-red-900"
-              :class="isAdmin ? 'cursor-pointer' : 'cursor-not-allowed'"
-              >Não Pago</span
-            >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"
+                />
+              </svg>
+              <svg
+                v-if="student.attributes.PaymentMethod === 'Transfer'"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z"
+                />
+              </svg>
+              <span
+                v-if="student.attributes.Paid && loading !== student.id"
+                @click="payFamilyStudent(student.id, false)"
+                class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900 shrink-0"
+                :class="isAdmin ? 'cursor-pointer' : 'cursor-not-allowed'"
+                >Pago
+                <span
+                  v-if="student.attributes.PaidMonths > 1 || monthsNumber > 1"
+                  class="absolute text-xs bg-teal-400 text-white rounded-full p-[2px] -top-2 -right-3"
+                  >x{{
+                    (monthsNumber > 1 && monthsNumber) ||
+                    student.attributes.PaidMonths
+                  }}</span
+                >
+              </span>
+              <span
+                v-if="!student.attributes.Paid && loading !== student.id"
+                @click="payFamilyStudent(student.id, true)"
+                class="bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-red-200 dark:text-red-900"
+                :class="isAdmin ? 'cursor-pointer' : 'cursor-not-allowed'"
+                >Não Pago</span
+              >
+            </template>
             <span v-if="loading === student.id">
               <svg
                 class="inline mr-2 w-4 h-4 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"

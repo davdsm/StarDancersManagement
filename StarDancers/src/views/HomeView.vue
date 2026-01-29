@@ -30,7 +30,7 @@ export default {
   methods: {
     async pay(id: any, status: boolean, method?: string) {
       if (this.isAdmin) {
-        if (status === false) this.update(id, { PaidMonths: 1 });
+        if (status === false) this.update(id, { PaidMonths: 0 });
         this.loading = id;
         [this.students, this.pagination] = await setStudent(
           "Paid",

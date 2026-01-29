@@ -9,7 +9,7 @@ export default {
       isAdmin: false,
       activePaymentSelector: <null | number>null,
       showMonths: <boolean>false,
-      monthsNumber: <number>1,
+      monthsNumber: <number>2,
     };
   },
   watch: {
@@ -20,7 +20,7 @@ export default {
   methods: {
     togglePaymentSelector(itemId: number) {
       this.pay(itemId, true);
-      this.monthsNumber = 1;
+      this.monthsNumber = 2;
       this.activePaymentSelector =
         this.activePaymentSelector === itemId ? null : itemId;
     },
@@ -46,7 +46,7 @@ export default {
     },
     cancelPaymentSelection() {
       this.activePaymentSelector = null;
-      this.monthsNumber = 1;
+      this.monthsNumber = 2;
       this.showMonths = false;
     },
   },
@@ -142,8 +142,16 @@ export default {
                 : 'pointer-events-none cursor-not-allowed',
             ]"
           >
+            <button
+              v-if="Number(item.attributes.DelayedPayments) > 0 && loading !== item.id"
+              type="button"
+              @click="update(item.id, { DelayedPayments: 0 })"
+              class="text-xs font-semibold px-3 py-1.5 rounded bg-amber-500 hover:bg-amber-600 text-white shrink-0"
+            >
+              Regularizar Situação
+            </button>
             <span
-              v-if="loading !== item.id && item.attributes.Paid"
+              v-else-if="loading !== item.id && item.attributes.Paid"
               @click="
                 pay(item.id, !item.attributes.Paid) && cancelPaymentSelection()
               "
@@ -155,7 +163,7 @@ export default {
                 >x{{ item.attributes.PaidMonths }}</span
               >
             </span>
-            <span v-if="loading === item.id">
+            <span v-else-if="loading === item.id">
               <svg
                 class="inline mr-2 w-4 h-4 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
                 viewBox="0 0 100 101"
@@ -173,24 +181,24 @@ export default {
               </svg>
             </span>
             <span
-              v-if="loading !== item.id && !item.attributes.Paid"
+              v-else-if="loading !== item.id && !item.attributes.Paid"
               @click="togglePaymentSelector(item.id)"
               class="bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-red-200 dark:text-red-900"
               :class="isAdmin ? 'cursor-pointer' : 'cursor-not-allowed'"
               >Não Pago</span
             >
             <img
-              v-if="item.attributes.PaymentMethod === 'MBWay'"
+              v-if="Number(item.attributes.DelayedPayments) <= 0 && item.attributes.PaymentMethod === 'MBWay'"
               src="../../assets/paymentMethods/mbway.png"
               class="w-4 h-8 object-contain aspect-square"
             />
             <img
-              v-if="item.attributes.PaymentMethod === 'Multibanco'"
+              v-if="Number(item.attributes.DelayedPayments) <= 0 && item.attributes.PaymentMethod === 'Multibanco'"
               src="../../assets/paymentMethods/multibanco.png"
               class="w-4 h-8 object-contain aspect-square"
             />
             <svg
-              v-if="item.attributes.PaymentMethod === 'Money'"
+              v-if="Number(item.attributes.DelayedPayments) <= 0 && item.attributes.PaymentMethod === 'Money'"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -205,7 +213,7 @@ export default {
               />
             </svg>
             <svg
-              v-if="item.attributes.PaymentMethod === 'Transfer'"
+              v-if="Number(item.attributes.DelayedPayments) <= 0 && item.attributes.PaymentMethod === 'Transfer'"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -222,7 +230,7 @@ export default {
 
             <ul
               class="absolute flex flex-row flex-no-wrap gap-4 items-center left-1/2 -translate-x-1/2 p-4 bg-white rounded top-2 justify-center"
-              v-if="activePaymentSelector === item.id && isAdmin"
+              v-if="activePaymentSelector === item.id && isAdmin && Number(item.attributes.DelayedPayments) <= 0"
             >
               <li class="shrink-0">
                 <button @click="selectPaymentMethod(item.id, 'MBWay')">
@@ -305,8 +313,10 @@ export default {
               <li v-if="showMonths" class="shrink-0 flex items-center gap-4">
                 <input
                   type="number"
-                  placeholder="1"
-                  v-model="monthsNumber"
+                  min="2"
+                  placeholder="2"
+                  v-model.number="monthsNumber"
+                  @input="monthsNumber = Math.max(2, Number(monthsNumber) || 2)"
                   class="bg-gray-100 pl-5 w-12 rounded p-0"
                 />
                 <button
