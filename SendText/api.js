@@ -18,7 +18,7 @@ const resetJob = async (id) => {
     .put(
       `${apiAddress}/api/students/${id}`,
       {
-        data: { Paid: false },
+        data: { Paid: false, PaymentMethod: null },
       },
       headers
     )
@@ -53,40 +53,7 @@ export const getStudents = async (page) => {
     });
 };
 
-export const resetJobs = async (page) => {
-  var actualPage = page;
-  var pageSize = 50;
-  if (!actualPage) actualPage = 1;
-  return axios
-    .get(
-      `${apiAddress}/api/students?sort=id:desc&pagination[pageSize]=${pageSize}&pagination[page]=${actualPage}`,
-      headers
-    )
-    .then(async (response) => {
-      actualPage = actualPage + 1;
-      if (response.data.data.length > 0) {
-        await response.data.data.forEach(async (student) => {
-          if (!student.attributes.Paid) {
-            setStudent(student.id, {
-              DelayedPayments: Number(student.attributes.DelayedPayments) + 1,
-            });
-          } else if (Number(student.attributes.PaidMonths) > 0) {
-            setStudent(student.id, {
-              PaidMonths: Number(student.attributes.PaidMonths) - 1,
-            });
-          } else {
-            resetJob(student.id);
-          }
-        });
 
-        resetJobs(actualPage);
-      }
-    })
-    .catch((response) => {
-      throw response;
-      return false;
-    });
-};
 
 /*
  * Get all students whose birthday is today
@@ -94,7 +61,7 @@ export const resetJobs = async (page) => {
 export const getTodayBirthdays = async () => {
   const today = new Date();
   const day = today.getDate().toString().padStart(2, "0"); // e.g. "04"
-  const month = (today.getMonth() + 1).toString().padStart(2, "0"); // e.g. "09"  
+  const month = (today.getMonth() + 1).toString().padStart(2, "0"); // e.g. "09"
 
   return axios
     .get(
@@ -108,4 +75,53 @@ export const getTodayBirthdays = async () => {
       console.log(error);
       return error.response ? error.response.status : 500;
     });
-}; 
+};
+export const resetJobs = async (page) => {
+  var actualPage = page;
+  var pageSize = 50;
+  if (!actualPage) actualPage = 1;
+  return axios
+    .get(
+      `${apiAddress}/api/students?sort=id:desc&pagination[pageSize]=${pageSize}&pagination[page]=${actualPage}`, // &filters[Class][$eq]=TESTE
+      headers
+    )
+    .then(async (response) => {
+      actualPage = actualPage + 1;
+      if (response.data.data.length > 0) {
+        for (const student of response.data.data) {
+          const paid = !!student.attributes.Paid;
+          const paidMonths = Number(student.attributes.PaidMonths || 0);
+          const delayedPayments = Number(student.attributes.DelayedPayments || 0);
+
+          // 1) Quem tem Paid = false (ou null/undefined): em cada reset aumenta DelayedPayments em 1 (0→1, 1→2, …)
+          if (!paid) {
+            await setStudent(student.id, {
+              Paid: false,
+              DelayedPayments: delayedPayments + 1,
+            });
+          }
+          // 2) Quem tem Paid = true e PaidMonths > 1, diminui PaidMonths em 1 e mantém Paid = true
+          else if (paidMonths > 1) {
+            await setStudent(student.id, {
+              Paid: true,
+              PaidMonths: paidMonths - 1,
+            });
+          }
+          // 3) Quem tem Paid = true e PaidMonths <= 1: passa a não pago e PaidMonths=0 (DelayedPayments só aumenta no próximo reset, quando já estiver Paid=false)
+          else if (paid && paidMonths <= 1) {
+            await setStudent(student.id, {
+              Paid: false,
+              PaidMonths: 0,
+              PaymentMethod: null,
+            });
+          }
+        }
+
+        resetJobs(actualPage);
+      }
+    })
+    .catch((response) => {
+      throw response;
+      return false;
+    });
+};
