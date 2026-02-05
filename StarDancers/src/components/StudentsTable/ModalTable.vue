@@ -64,32 +64,37 @@ export default {
     },
     async payFamilyStudent(studentId: number, status: boolean) {
       this.loading = studentId;
-      await this.pay(studentId, status, status && this.paymentMethod);
-      const fam = await getFamilyByStudentId(this.student.id);
-      this.family = fam;
-      this.loading = false;
-      if (this.monthsNumber >= 2) {
-        this.payMonths(
+      try {
+        await this.pay(studentId, status, status && this.paymentMethod);
+        const fam = await getFamilyByStudentId(this.student.id);
+        this.family = fam;
+      } finally {
+        this.loading = false;
+      }
+      if (this.showMonths && this.monthsNumber >= 2) {
+        await this.payMonths(
           studentId,
           this.local_student.attributes.DelayedPayments
         );
       }
     },
-    payMonths(itemId: number, delayedPayments: number) {
+    async payMonths(itemId: number, delayedPayments: number) {
       if (this.monthsNumber >= delayedPayments) {
-        this.update(itemId, {
+        await this.update(itemId, {
           DelayedPayments: 0,
           PaidMonths: this.monthsNumber - delayedPayments,
         });
       } else if (this.monthsNumber <= delayedPayments) {
-        this.update(itemId, {
+        await this.update(itemId, {
           DelayedPayments: delayedPayments - this.monthsNumber,
           PaidMonths: 0,
         });
       } else {
-        this.update(itemId, { PaidMonths: this.monthsNumber });
+        await this.update(itemId, { PaidMonths: this.monthsNumber });
       }
       this.showMonths = false;
+      const fam = await getFamilyByStudentId(this.student.id);
+      this.family = fam;
     },
     async regularizarSituacao(studentId: number) {
       this.loading = studentId;
@@ -808,16 +813,13 @@ export default {
               <span
                 v-if="student.attributes.Paid && loading !== student.id"
                 @click="payFamilyStudent(student.id, false)"
-                class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900 shrink-0"
+                class="flex items-center bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900 shrink-0"
                 :class="isAdmin ? 'cursor-pointer' : 'cursor-not-allowed'"
                 >Pago
                 <span
-                  v-if="student.attributes.PaidMonths > 1 || monthsNumber > 1"
-                  class="absolute text-xs bg-teal-400 text-white rounded-full p-[2px] -top-2 -right-3"
-                  >x{{
-                    (monthsNumber > 1 && monthsNumber) ||
-                    student.attributes.PaidMonths
-                  }}</span
+                  v-if="Number(student.attributes.PaidMonths) > 1"
+                  class="text-xs bg-green-400 font-bold text-white rounded-full w-5 h-5 flex items-center justify-center ml-2"
+                  >x{{ student.attributes.PaidMonths }}</span
                 >
               </span>
               <span

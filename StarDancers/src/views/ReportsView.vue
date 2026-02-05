@@ -3,9 +3,11 @@ import qs from "qs";
 
 import { useUserStore } from "@/stores/user";
 import TableList from "@/components/ReportsTable/TableList.vue";
-import { getReports } from "@/services/reports";
+import DeletePopup from "@/components/ReportsTable/DeletePopup.vue";
+import { getReports, deleteReport } from "@/services/reports";
 
 export default {
+  components: { TableList, DeletePopup },
   data() {
     return {
       reports: [],
@@ -17,9 +19,29 @@ export default {
       pagination: <any>{},
       page: <number>1,
       searchTerm: "",
+      deleteConfirmation: <boolean>false,
+      reportToDelete: <any>null,
     };
   },
   methods: {
+    onDeleteRequest(item: any) {
+      this.reportToDelete = item;
+      this.deleteConfirmation = true;
+    },
+    async confirmDelete() {
+      if (!this.reportToDelete) return;
+      this.loading = true;
+      try {
+        await deleteReport(this.reportToDelete.id);
+        this.deleteConfirmation = false;
+        this.reportToDelete = null;
+        await this.get();
+      } catch (e) {
+        console.error(e);
+      } finally {
+        this.loading = false;
+      }
+    },
     async get() {
       return ([this.reports, this.pagination] = await getReports(
         this.page,
@@ -59,8 +81,6 @@ export default {
       return await this.get();
     },
   },
-  components: { TableList },
-
   async beforeMount() {
     [this.reports, this.pagination] = await this.get();
   },
@@ -157,7 +177,14 @@ export default {
         v-if="reports.length > 0"
         :reports="reports"
         :loading="loading"
+        :onDeleteRequest="onDeleteRequest"
       />
     </div>
   </div>
+  <DeletePopup
+    v-if="deleteConfirmation && reportToDelete"
+    :name="reportToDelete?.attributes?.Name"
+    :yes="confirmDelete"
+    :no="() => ((deleteConfirmation = false), (reportToDelete = null))"
+  />
 </template>

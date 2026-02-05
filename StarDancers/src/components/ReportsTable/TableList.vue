@@ -1,13 +1,13 @@
 <script lang="ts">
 export default {
-  props: ["reports", "query", "loading"],
+  props: ["reports", "query", "loading", "onDeleteRequest"],
   data() {
     return {
       local_reports: this.reports,
     };
   },
   watch: {
-    notifications() {
+    reports() {
       this.local_reports = this.reports;
     },
   },
@@ -83,7 +83,12 @@ export default {
           </td>
 
           <td class="py-4 px-6 flex justify-start dark:text-white">
-            <button>
+            <button
+              type="button"
+              @click="onDeleteRequest && onDeleteRequest(item)"
+              class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+              title="Eliminar relatório"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"

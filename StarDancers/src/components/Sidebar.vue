@@ -129,7 +129,7 @@ export default {
       </ul>
     </nav>
     <footer v-if="open" class="text-gray-400 text-xs p-4 hidden md:block">
-      <p>© 2025 Star Dancers</p>
+      <p>© 2026 Star Dancers</p>
     </footer>
     <button
       @click="open = !open"
